@@ -13,5 +13,35 @@ Input: "race a car"
 Output: false
 
 
+class Solution {
+    public boolean isPalindrome(String s) {
+        String newS = "";
+        char[] array = s.toLowerCase().toCharArray();
+        for (char c: array) {
+            if (Character.isDigit(c) || Character.isLetter(c)) {
+                newS += c;
+            }
+        }
+        
+        int left = 0;
+        int right = newS.length() - 1;
+        
+        while (left <= right) {
+            if (newS.charAt(left) != (newS.charAt(right))) {
+                return false;
+            }
+            
+            left++;
+            right--;
+        }
+        
+        return true;
+        
+        
+    }
+}
 
+
+
+    
 
