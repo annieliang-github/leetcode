@@ -14,3 +14,33 @@ Notes:
     Depending on your language, the queue may not be supported natively. You may simulate a queue using a list or deque (double-ended queue), as long as you use only a queue's standard operations.
 
 Follow-up: Can you implement the stack such that each operation is amortized O(1) time complexity? In other words, performing n operations will take overall O(n) time even if one of those operations may take longer.
+
+
+class MyStack {
+    Queue<Integer> q = new LinkedList<Integer>();
+    
+    // Push element x onto stack.
+    public void push(int x) {
+        q.add(x);
+        
+        int n = q.size();
+        while (n-- > 1)
+            q.add(q.poll());
+    }
+
+    // Removes the element on top of the stack.
+    public void pop() {
+        q.poll();
+    }
+
+    // Get the top element.
+    public int top() {
+        return q.peek();
+    }
+
+    // Return whether the stack is empty.
+    public boolean empty() {
+        return q.isEmpty();
+    }
+
+  }
