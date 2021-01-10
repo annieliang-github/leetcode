@@ -2,3 +2,24 @@
 Given an array of integers nums containing n + 1 integers where each integer is in the range [1, n] inclusive.
 
 There is only one repeated number in nums, return this repeated number.
+
+
+class Solution {
+    public int findDuplicate(int[] nums) {
+        int fast = nums[0];
+        int slow = nums[0];
+        
+        do {
+            fast = nums[nums[fast]];
+            slow = nums[slow];
+        } while (fast != slow);
+        
+        int ptr1 = nums[0];
+        int ptr2 = fast;
+        while (ptr1!= ptr2) {
+            ptr1=nums[ptr1];
+            ptr2=nums[ptr2];
+        }
+        return ptr1;
+    }
+}
