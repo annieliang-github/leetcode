@@ -6,3 +6,53 @@
     Each value on each linked list is in the range [1, 10^9].
     Your code should preferably run in O(n) time and use only O(1) memory.
 
+
+public class Solution {
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        ListNode pa = headA, pb;
+        while (pa != null) {
+            for (pb = headB; pb != null; pb = pb.next) {
+                if (pa == pb) {
+                    return pa;
+                }
+            }
+            pa = pa.next;
+        }
+        return null;
+    }
+}
+
+
+public class Solution {
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        Set<ListNode> nodes = new HashSet<>();
+        ListNode pa = headA;
+        while (pa != null) {
+            nodes.add(pa);
+            pa = pa.next;
+        }
+        if (nodes.isEmpty()) {
+            return null;
+        }
+        ListNode pb = headB;
+        while (pb != null) {
+            if (nodes.contains(pb)) {
+                return pb;
+            }
+            pb = pb.next;
+        }
+        return null;
+    }
+}
+
+
+public class Solution {
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        ListNode pa = headA, pb = headB;
+        while (pa != pb) {
+            pa = (pa != null) ? pa.next : headB;
+            pb = (pb != null) ? pb.next : headA;
+        }
+        return pa;
+    }
+}
