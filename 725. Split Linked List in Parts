@@ -13,3 +13,47 @@ Example 1:
 Input: 
 root = [1, 2, 3], k = 5
 Output: [[1],[2],[3],[],[]]
+
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode[] splitListToParts(ListNode root, int k) {
+        int length = 0;
+        ListNode curr = root;
+        while (curr != null) {
+            length++;
+            curr = curr.next;
+        }
+        
+        int size = length / k;
+        int mod = length % k;
+        
+        ListNode[] ans = new ListNode[k];
+        curr = root;
+        
+        for (int i = 0; curr != null && i < k; i++) {
+            ans[i] = curr;
+            
+            int currSize = size + (mod-- > 0 ? 1 : 0);
+            for (int j = 0; j < currSize - 1; j++) {
+                curr = curr.next;
+            }
+            
+            ListNode next = curr.next;
+            curr.next = null;
+            curr = next;
+        }
+        return ans;
+    }
+}
+
+
