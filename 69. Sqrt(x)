@@ -45,3 +45,19 @@ class Solution {
         }
     }
 }
+
+
+
+class Solution {
+    public int mySqrt(int x) {
+        if (x < 2) return x;
+        int left = 1, right = x;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if ((long) mid * mid == x) return mid;
+            else if ((long) mid * mid > x) right = mid;
+            else left = mid + 1;
+        }    
+        return left - 1;
+    }
+}
