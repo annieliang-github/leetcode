@@ -1,0 +1,57 @@
+Convert a non-negative integer num to its English words representation.
+
+ 
+
+Example 1:
+
+Input: num = 123
+Output: "One Hundred Twenty Three"
+
+Example 2:
+
+Input: num = 12345
+Output: "Twelve Thousand Three Hundred Forty Five"
+
+
+class Solution {
+    private final String[] THOUSANDS = {"", "Thousand", "Million", "Billion"};
+    private final String[] LESS_THAN_TWENTY = {"", "One", "Two", "Three", "Four", "Five", 
+    "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen",
+     "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"};
+    private final String[] TENS = {"", "", "Twenty", "Thirty", "Forty", "Fifty",
+     "Sixty", "Seventy", "Eighty", "Ninety"};
+    
+    public String numberToWords(int num) {
+        if (num == 0) return "Zero";
+        StringBuilder sb = new StringBuilder();
+        int index = 0;
+        while (num > 0) {
+            if (num % 1000 > 0) {
+                StringBuilder temp = new StringBuilder();
+                helper(temp, num % 1000);
+                temp.append(THOUSANDS[index]).append(" ");
+                sb.insert(0, temp);
+            }
+            index++;
+            num /= 1000;
+        }
+        return sb.toString().trim();
+    }
+    
+    private void helper(StringBuilder temp, int num) {
+        if (num == 0) return;
+        else if (num < 20) {
+            temp.append(LESS_THAN_TWENTY[num]).append(" ");
+        } else if (num < 100) {
+            temp.append(TENS[num / 10]).append(" ");
+            helper(temp, num % 10);
+        } else {
+            temp.append(LESS_THAN_TWENTY[num / 100]).append(" Hundred ");
+            helper(temp, num % 100);
+        }
+    }
+}
+
+
+         
+
