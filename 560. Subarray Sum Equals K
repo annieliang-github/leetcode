@@ -1,0 +1,31 @@
+Given an array of integers nums and an integer k, return the total number of continuous subarrays whose sum equals to k.
+
+ 
+
+Example 1:
+
+Input: nums = [1,1,1], k = 2
+Output: 2
+
+Example 2:
+
+Input: nums = [1,2,3], k = 3
+Output: 2
+
+
+class Solution {
+    public int subarraySum(int[] nums, int k) {
+        int count = 0, pre = 0;
+        // 前几个数字之和为K 出现相同和的次数为V
+        HashMap<Integer, Integer> map = new HashMap<>();
+        map.put(0, 1);
+        for (int i = 0; i < nums.length; i++) {
+            pre += nums[i];
+            if (map.containsKey(pre - k)) {
+                count += map.get(pre - k);
+            }
+            map.put(pre, map.getOrDefault(pre, 0) + 1);
+        }
+        return count;
+    }
+}
