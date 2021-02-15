@@ -1,0 +1,32 @@
+Convert a BST to a sorted circular doubly-linked list in-place. Think of the left and right pointers as synonymous to the previous and next pointers in a doubly-linked list. 
+//Node(int _val, Node _left, Node _right)
+把Tree改写成头尾相连的双向链表
+
+class Sulution {
+    Node prev = null;
+    public Node treeToDoublyList(Node root) {
+        if (root == null) return null;
+        Node dummy = new Node(0, null, null);
+        prev = dummy;
+        // helper function把所有nodes连起来
+        helper(root);
+        // 头尾相连，此时prev在最后，prev.right就是尾->第一个元素(dummy.right)
+// dummy.right.left是第一个元素的prev，也就是要连尾
+        prev.right = dummy.right;
+        dummy.right.left = prev;
+        return dummy.right;
+}
+
+    private void helper(Node curr) {
+    if (curr == null) return null;
+    //遍历树 left-mid-right
+    helper(curr.left);
+//把左右Node连接起来
+    prev.right = curr;
+    curr.left = prev;
+    //update prev
+    prev = curr;
+    helper(curr.right);
+}
+}
+
