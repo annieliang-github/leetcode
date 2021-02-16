@@ -1,0 +1,32 @@
+Given a nested list of integers, return the sum of all integers in the list weighted by their depth.
+Each element is either an integer, or a list -- whose elements may also be integers or other lists.
+Example 1:
+Input: [[1,1],2,[1,1]]
+Output: 10 
+Explanation: Four 1's at depth 2, one 2 at depth 1.
+
+interface NestedInteger {
+    有isInteger(), getList(), getInteger()等function
+}
+
+class Solution {
+
+    private int sum = 0;
+
+public int depthSum(List<NestedInteger> nestedList) {
+    if (nestedList == null || nestedList.size() ==0) return 0;
+    dfs(nestedList, 1); //数组的base case depth是1
+    return sum;
+        }
+    
+    private void dfs(List<NestedInteger> nestedList, int depth) {
+    for(NestedInteger ni : nestedList) {
+        if (ni.isIngeter()) { //为数字的情况
+            sum += ni.getInteger() * depth;
+} else { //为数组的情况，recurse
+dfs(ni.getList(), depth + 1);    
+}
+}
+}
+}
+
