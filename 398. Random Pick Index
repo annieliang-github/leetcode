@@ -1,0 +1,45 @@
+Given an array of integers with possible duplicates, randomly output the index of a given target number. Assume that the given target number must exist in the array.
+// 假设当前正要读取第n个数据，以1/n的概率留下该数据，否则留下前n-1个数据中的一个。
+class Solution {
+    private int[] nums;
+    public Solution(int[] nums) {
+            this.nums = nums;
+    }
+        //蓄水池问题
+    public int pick(int target) {
+        Random r = new Random();
+        int n = 0; //概率中的分母
+        int index = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == target) {
+                    n++; 
+                    if (r.nextInt() % n == 0) index = i;
+            }
+        }
+        return index;
+    }
+}
+
+class Solution {
+    HashMap<Integer, List<Integer>> map = new HashMap<>(); //target : [indexes]
+    public Solution(int[] nums) {
+       for (int i = 0; i < nums.length; i++) {
+           if (map.containsKey(nums[i])) {
+               List<Integer> list = map.get(nums[i]); //取出list
+               list.add(i); //list里添加index i.e[2,3,4]
+               map.put(nums[i], list); //放回hashMap
+           } else {
+               List<Integer> list = new ArrayList<>(); //新建list
+               list.add(i); //list里添加index
+               map.put(nums[i], list); //map i.e. <3,[2,3,4]>, <1,[0]>
+           }
+       }
+    }
+    public int pick(int target) {
+        List<Integer> list = map.get(target); //list: target值
+        int size = list.size();
+        //Math.random() returns a random number between [0,1)
+        int rand = (int) (Math.random() * size);
+        return list.get(rand);
+    }
+}
