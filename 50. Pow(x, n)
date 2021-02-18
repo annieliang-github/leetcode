@@ -1,0 +1,45 @@
+Implement pow(x, n), which calculates x raised to the power n (xn).
+
+Input: 2.00000, 10
+Output: 1024.00000
+
+i.e.计算2^9，
+res        num        pow
+1        2        9
+1*2        4（2*2）    4 （8/2）
+1*2        16 （4*4）    2 （4/2）
+1*2        256（16*16）    1 （2/2）
+1*2*256
+
+class Solution {
+    public double myPow(double x, int n) {
+        if (n == 0 || x == 1) return 1;
+        if (n == 1) return x;
+//防止MIN_VALUE溢出，先+1再取负，myPow，但此时因为（+1）所以要再乘一个x
+//相当于1 / myPow(x, -n);
+        if (n < 0) return 1 / (x * myPow(x,-(n + 1)));
+
+        double res = 1;
+        while (n > 1) {
+            if (n % 2 == 1) res *= x; //res乘以x，x平方
+            x = x * x;
+            n /= 2;
+}
+//当n等于1的时候再把结果乘以result
+res *= x;
+return res;
+}
+}
+
+或者可以用recursion（不确定正确性）
+class Solution {
+public double myPow(double x, long n) {
+    if (n == 0)
+return 1;
+    if (n < 0)
+      return 1 / myPow(x, -n);
+    if (n % 2 == 1)
+      return x * myPow(x, n - 1);
+    return myPow(x * x, n / 2);
+}
+}
