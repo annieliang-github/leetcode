@@ -1,0 +1,40 @@
+Given the root of a binary tree, calculate the vertical order traversal of the binary tree. For each node at position (row, col), its left and right children will be at positions (row + 1, col - 1) and (row + 1, col + 1) respectively. The root of the tree is at (0, 0). There may be multiple nodes in the same row and same column. In such a case, sort these nodes by their values.
+Input: root = [3,9,20,null,null,15,7]
+Output: [[9],[3,15],[20],[7]]
+
+
+class Solution {
+    public List<List<Integer>> verticalTraversal(TreeNode root) {
+        TreeMap<Integer, TreeMap<Integer, PriorityQueue<Integer>>> 
+map = new TreeMap<>();
+        List<List<Integer>> res = new ArrayList<>();
+        dfs(root, 0, 0, map);
+        for (TreeMap<Integer, PriorityQueue<Integer>> y : map.values()) {
+            res.add(new ArrayList<>());
+            for (PriorityQueue<Integer> nodes : y.values()) {
+                while (!nodes.isEmpty()) {
+                    //拿到arrayList的位置，放入
+                    res.get(res.size() - 1).add(nodes.poll());
+                }
+            }
+        }
+        return res;
+    }
+    
+    private void dfs(TreeNode root, int x, int y, TreeMap<Integer, 
+TreeMap<Integer, PriorityQueue<Integer>>> map) {
+        if (root == null) return ;
+        //第一次遇到列的话，new 一个，如果以前有直接加进去
+        if (!map.containsKey(x)) {
+            map.put(x, new TreeMap<>());
+        }
+        if (!map.get(x).containsKey(y)) {
+            map.get(x).put(y, new PriorityQueue<>());
+        }
+        //get到pq的位置，然后加入值
+        map.get(x).get(y).offer(root.val);
+        //使用y+1往下看row而不是y-1 因为如果y-1需要reverse（）
+        dfs(root.left, x - 1, y + 1, map);
+        dfs(root.right, x + 1, y + 1, map);
+    }
+}
