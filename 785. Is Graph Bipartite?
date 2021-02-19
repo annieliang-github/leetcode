@@ -1,0 +1,32 @@
+There is an undirected graph with n nodes, where each node is numbered between 0 and n - 1. You are given a 2D array graph, where graph[u] is an array of nodes that node u is adjacent to. More formally, for each v in graph[u], there is an undirected edge between node u and node v. The graph has the following properties:
+There are no self-edges (graph[u] does not contain u).
+There are no parallel edges (graph[u] does not contain duplicate values).
+If v is in graph[u], then u is in graph[v] (the graph is undirected).
+The graph may not be connected, meaning there may be two nodes u and v such that there is no path between them.
+A graph is bipartite if the nodes can be partitioned into two independent sets A and B such that every edge in the graph connects a node in set A and a node in set B.
+Return true if and only if it is bipartite.
+Input: graph = [[1,2,3],[0,2],[0,1,3],[0,2]]
+Output: false
+
+class Solution {
+    public boolean isBipartite(int[][] graph) {
+        int n = graph.length;
+        int[] colors = new int[n];
+        for (int i = 0; i < n; i++) {
+            //如果没有被涂色 且 涂不上色
+            if (colors[i] == 0 && !dfs(graph, colors, 1, i)) return false;
+        }
+        return true;
+}
+
+private boolean dfs(int[][] graph, int[] colors, int color, int i) {
+        //如果node已经被涂，查看已经涂色的颜色是否等于要涂的颜色
+        if (colors[i] != 0) return colors[i] == color;
+        //如果node没被涂色,也要涂邻居相反色
+        colors[i] = color;
+        for (int neighbor : graph[i]) {
+            if (!dfs(graph, colors, -color, neighbor)) return false;
+        }
+        return true;
+    }
+}
