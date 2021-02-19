@@ -1,0 +1,32 @@
+Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, determine if s can be segmented into a space-separated sequence of one or more dictionary words.
+Note:
+The same word in the dictionary may be reused multiple times in the segmentation.
+You may assume the dictionary does not contain duplicate words.
+Example 1:
+Input: s = "leetcode", wordDict = ["leet", "code"]
+Output: true
+Explanation: Return true because "leetcode" can be segmented as "leet code".
+
+
+class Solution {
+    public boolean wordBreak(String s, List<String> wordDict) {
+        int n = s.length();
+        //dp[i]: s前i个字符组成的字符串是否能拆分成若干个字典中出现的单词
+        boolean[] dp = new boolean[n + 1];
+        dp[0] = true;
+        
+        //j是左边的，i是右边的
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j < i; j++) {
+                //dp[j]是否能做拆分
+                //dictionary是不是包含
+                if (dp[j] && wordDict.contains(s.substring(j, i))) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        //看结尾能不能返回true
+        return dp[n];
+    }
+}
