@@ -1,0 +1,34 @@
+Given a node from a cyclic linked list which is sorted in ascending order, write a function to insert a value into the list such that it remains a cyclic sorted list. The given node can be a reference to any single node in the list, and may not be necessarily the smallest value in the cyclic list.
+
+If there are multiple suitable places for insertion, you may choose any place to insert the new value. After the insertion, the cyclic list should remain sorted.
+
+If the list is empty (i.e., given node is null), you should create a new single cyclic list and return the reference to that single node. Otherwise, you should return the original given node.
+
+
+class Solution {
+    public Node insert(Node head, int insertVal) {
+        if (head == null) { //建一个环形链表，自己指自己
+            Node node = new Node();
+            node.val = insertVal;
+            node.next = node;
+            return node;
+}
+Node max = head; //遍历，找到最大的一个数（有可能有重复）
+while (max.next != head && max.val <= max.next.val) {
+    max = max.next;
+}
+
+Node min = max.next, cur = min; //最大值下一个就是最小值
+if (insertVal >= max.val || insertVal <= min.val) {//大于最大或小于最小
+    Node node = new Node(insertVal, min) //插在最小前面
+    max.next = node;
+} else {
+    while (curr.next.val < insertVal) {
+        cur = cur.next; //遍历后，cur.next比insertVal大
+}
+Node node = new Node(insertVal, cur.next); //插在中间
+cur.next = node;
+}
+return head;
+}
+}
