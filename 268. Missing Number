@@ -13,29 +13,42 @@ Your algorithm should run in linear runtime complexity. Could you implement it u
 
 
 
+class Solution {
+    public int missingNumber(int[] nums) {
+        int length = nums.length;
+        int expectedSum = (1 + length) * length/ 2;
+        
+        int actualSum = 0;
+        for (int i : nums) {
+            actualSum += i;
+        }
+        return expectedSum - actualSum;
+    }
+}
+time complexity: O(n), space complexity O(1)
 
+class Solution {
+    public int missingNumber(int[] nums) {
+        Set<Integer> set = new HashSet<>();
+        for (int i : nums) set.add(i);
+        for (int i = 0; i < nums.length + 1; i++) {
+            if (!set.contains(i)) return i;
+        }
+        return -1;
+    }
+}
+time complexity: O(n), space complexity O(n)
 
 class Solution {
     public int missingNumber(int[] nums) {
         Arrays.sort(nums);
-        
-        //第一位是不是0
-        if (nums[0] != 0) {
-            return 0;
-        } 
-        //最后一位是不是n
-        if (nums[nums.length - 1] != nums.length) {
-            return nums.length;
+          if (nums[nums.length-1] != nums.length) return nums.length;
+        else if (nums[0] != 0) return 0;
+        for (int i = 1; i < nums.length; i++) {
+            int expectedNum = nums[i-1] + 1;
+            if (nums[i] != expectedNum) return expectedNum;
         }
-        
-        for (int i = 0; i < nums.length - 1; i++) {
-            if (nums[i] + 1 != nums[i + 1]){
-                int number = nums[i] + 1;
-                return number;
-            }
-    
-        }
-        //not missing any number
-        return -1;
+return -1;
     }
 }
+time complexity: O(nlogn), space complexity O(n)/O(1)取决于是否可以修改array
