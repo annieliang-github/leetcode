@@ -39,3 +39,19 @@ class Solution {
     }
 }
 时间复杂度：每个节点只遍历一次,O(N). 空间复杂度：开辟了一个hashMap,O(N).
+
+
+class Solution {
+    public int pathSum(TreeNode root, int sum) {
+        if (root == null) return 0;
+        int ret = pathSumStartWithRoot(root, sum) + pathSum(root.left, sum) + pathSum(root.right, sum);
+        return ret;
+    }
+    private int pathSumStartWithRoot(TreeNode root, int sum) {
+        if (root == null) return 0;
+        int ret = 0;
+        if (root.val == sum) ret++;
+        ret += pathSumStartWithRoot(root.left, sum - root.val) + pathSumStartWithRoot(root.right, sum - root.val);
+        return ret;
+    }
+}
