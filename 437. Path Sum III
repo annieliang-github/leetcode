@@ -1,0 +1,41 @@
+You are given a binary tree in which each node contains an integer value. Find the number of paths that sum to a given value. The path does not need to start or end at the root or a leaf, but it must go downwards (traveling only from parent nodes to child nodes).
+      10
+     /  \                The paths that sum to 8 are:
+    5   -3                1.  5 -> 3
+   / \    \                2.  5 -> 2 -> 1
+  3   2   11                3. -3 -> 11
+ / \   \
+3  -2   1                Return 3. 
+
+class Solution {
+    //HashMap的k是前缀和，v是该前缀和的节点数量，有出现复数路径的可能
+    Map<Integer, Integer> prefixMap;
+    int target;
+
+    public int pathSum(TreeNode root, int sum) {
+        prefixMap = new HashMap<>();
+        target = sum;
+        prefixMap.put(0, 1); // 前缀和为0的路径只有一条：哪个节点都不选
+        return dfs(root, 0);
+    }
+
+    private int dfs(TreeNode node, int curSum) {
+        if (node == null) return 0;
+        int res = 0;
+        curSum += node.val; //当前路径上的和
+
+        // currSum-target相当于找路径的起点, 此行计算当前点到起点的距离
+        res += prefixMap.getOrDefault(curSum - target, 0); 
+        //更新路径上当前节点前缀和的个数
+        prefixMap.put(curSum, prefixMap.getOrDefault(curSum, 0) + 1);
+        
+        int left = dfs(node.left, curSum);
+        int right = dfs(node.right, curSum);
+        res = res + left + right; // 满足条件的路径数量
+
+        //回到本层，恢复状态，去除当前节点的前缀和数量
+        prefixMap.put(curSum, prefixMap.get(curSum) - 1);
+        return res;
+    }
+}
+时间复杂度：每个节点只遍历一次,O(N). 空间复杂度：开辟了一个hashMap,O(N).
