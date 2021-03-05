@@ -1,0 +1,36 @@
+Given the root of a binary tree, return the length of the longest path, where each node in the path has the same value. This path may or may not pass through the root.
+The length of the path between two nodes is represented by the number of edges between them.
+
+Input: root = [5,4,5,1,1,5]
+Output: 2
+
+class Solution {
+    int ans = 0;
+      public int longestUnivaluePath(TreeNode root) {
+        if (root == null) return 0;
+        dfs(root);
+        return ans;
+    }
+    
+    private int dfs(TreeNode root) {
+        if (root == null) return 0;
+        int leftMax = dfs(root.left); //记录左子树的最大同值路径
+        int rightMax = dfs(root.right);
+        if (root.left != null) {
+            //只有当前节点与左右孩子的值相同时，才为同值路径，否则为0
+            if (root.left.val == root.val) leftMax += 1;
+            else leftMax = 0;
+        }
+//可以用ternary operator
+left = (root.left != null && root.left.val == root.val) ? left + 1 : 0;
+        if (root.right != null) {
+            if (root.right.val == root.val) rightMax += 1;
+            else rightMax = 0;
+        }    
+        //当前节点的左子树经过当前节点到其右子树的路径        
+        ans = Math.max(ans, leftMax + rightMax);
+        
+        //当前节点要返回leftMax和rightMax中的较大一个
+        return Math.max(leftMax, rightMax);
+    }
+}
