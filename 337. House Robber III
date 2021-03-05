@@ -1,0 +1,42 @@
+Determine the maximum amount of money the thief can rob tonight without alerting the police. Input: [3,2,3,null,3,null,1] Output: 7 
+     3
+    / \
+   2   3
+    \   \ 
+     3   1
+
+Explanation: Maximum amount of money the thief can rob = 3 + 3 + 1 = 7.
+
+class Solution {
+    public int rob(TreeNode root) {
+            return Math.max(dfs(root)[0], dfs(root)[1]);
+    }
+    private int[] dfs(TreeNode root) {
+        //返回的数组为[withRoot, withoutRoot]
+        if (root == null) return new int[]{0, 0};
+        int[] leftPair = dfs(root.left);
+        int[] rightPair = dfs(root.right);
+        //root + 左边包括 + 右边包括 (index 1)
+
+        int withRoot = root.val + leftPair[1] + rightPair[1];
+        //不包括root的话，look at left/right subtree and take the max
+        int withoutRoot = Math.max(leftPair[0], leftPair[1]) + 
+     Math.max(rightPair[0], rightPair[1]);
+
+        //选with还是without里较大的
+        return new int[]{withRoot, withoutRoot};
+    }
+}
+
+Time complexity: O(N). Space complexity: need stacks to do recursion, maximum depth of the recursion is the height of the tree, O(N) in the worst case and O(logN) in the best case.
+
+法2：
+public int rob(TreeNode root) {
+if (root == null) return 0;
+        int val1 = root.val;
+//root + 跳过中间的一层，直接到第三层的左右孩子
+        if (root.left != null) val1 += rob(root.left.left) + rob(root.left.right);
+        if (root.right != null) val1 += rob(root.right.left) + rob(root.right.right);
+        int val2 = rob(root.left) + rob(root.right); //如果不算root只要第二层孩子
+        return Math.max(val1, val2);
+}
