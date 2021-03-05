@@ -1,0 +1,22 @@
+111. Minimum Depth of Binary Tree
+
+Given a binary tree, find its minimum depth. The minimum depth is the number of nodes along the shortest path from the root node down to the nearest leaf node.
+Note: A leaf is a node with no children.
+class Solution {
+    public int minDepth(TreeNode root) {
+        if (root == null) return 0;
+//左孩子和有孩子都为空的情况，说明到达了叶子节点，直接返回1即可
+        if (root.left == null && root.right == null) return 1;
+        
+        int minDepth = Integer.MAX_VALUE;
+        if (root.left != null) 
+minDepth = Math.min(minDepth(root.left), minDepth);
+        if (root.right != null) 
+minDepth = Math.min(minDepth(root.right), minDepth);
+         //左右孩子都不为空，返回最小深度+1 min(left,right) + 1
+        return minDepth + 1;
+    }
+}
+
+时间复杂度：O(N)，其中N是树的节点数。对每个节点访问一次。
+空间复杂度：O(H)，其中H是树的高度。最坏情况下，树呈现链状O(N), 平均情况O(logN)。
