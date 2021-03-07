@@ -1,0 +1,36 @@
+A valid encoding of an array of words is any reference string s and array of indices indices such that:
+words.length == indices.length
+The reference string s ends with the '#' character.
+For each index indices[i], the substring of s starting from indices[i] and up to (but not including) the next '#' character is equal to words[i].
+Given an array of words, return the length of the shortest reference string s possible of any valid encoding of words.
+Input: words = ["time", "me", "bell"]
+Output: 10, A valid encoding would be s = "time#bell#" and indices = [0, 2, 5]
+
+class Solution {
+    public int minimumLengthEncoding(String[] words) {
+        Arrays.sort(words, (a, b) -> b.length() - a.length()); //len从多到少排列
+        StringBuilder sb = new StringBuilder();
+        for (String s : words) {
+            if (sb.indexOf(s + "#") == -1) sb.append(s + '#');
+        }
+        return sb.length();
+    }
+}
+time: O(nlogn) for sorting, space: O(n)
+
+class Solution {
+    public int minimumLengthEncoding(String[] words) {
+        Set<String> set = new HashSet(Arrays.asList(words));
+        for (String word : words) { 
+            for (int i = 1; i < word.length(); i++) { //从第二个字母开始查后缀
+                    set.remove(word.substring(i)); //比如time & me去重
+            }
+        }
+        int ans = 0;
+        for (String word : set) {
+            ans += word.length() + 1; //单词的长度再+“#”的长度1
+        }
+        return ans;
+    }
+}
+time: O(∑wi^2), wi​ 是 words[i] 的长度, space: O(∑wi) 存储到set
