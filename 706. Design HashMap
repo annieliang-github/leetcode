@@ -1,0 +1,64 @@
+
+class MyHashMap {
+    private final int N = 10000;//静态数组长度10000
+    private Node[] data; //map用数组实现
+    private class Node {
+        int key, value;
+        Node next;
+        Node(int key, int value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
+    private int hash(int key) {
+            return key % N;
+    } 
+    public MyHashMap() {
+            data = new Node[N];
+    }
+    public void put(int key, int value) {
+        int hash = hash(key);
+        if (data[hash] == null) { //在数组对应idx上还没有链表节点
+            data[hash] = new Node(-1, -1); //构造一个dummy head
+            data[hash].next = new Node(key, value); //dummy的下一个为实节点
+        } else {
+            Node prev = data[hash]; //从dummy开始遍历
+            while (prev.next != null) {
+                if (prev.next.key == key) {
+                    prev.next.value = value; //有key，更新value
+                    return;
+                }
+                prev = prev.next;
+            }
+            prev.next = new Node(key, value); //没有key，新增
+        }
+    }
+    
+    public int get(int key) {
+        int hash = hash(key);
+        if (data[hash] != null) {
+            Node curr = data[hash].next; //从实际头结点开始，不是dummy
+            while (curr != null) {
+                if (curr.key == key) return curr.value;
+                curr = curr.next;
+            }
+        }
+        return -1; //没找到
+    }
+    public void remove(int key) {
+        int hash = hash(key);
+        if (data[hash] != null) {
+            Node prev = data[hash]; //从dummy节点开始
+            while (prev.next != null) {
+                if (prev.next.key == key) {
+                    prev.next = prev.next.next; //把这个要删的节点跳过
+                    return;
+                }
+                prev = prev.next;
+            }
+        }
+    }
+}
+
+ 
+
