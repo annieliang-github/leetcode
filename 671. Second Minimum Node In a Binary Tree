@@ -1,0 +1,44 @@
+Each node in this tree has exactly two or 0 sub-node. Root.val = min(root.left.val, root.right.val) always holds. Output the second minimum value in the set made of all the nodes' value in the whole tree. If no such value exists, output -1 instead.    
+Input: root = [2,2,5,null,null,5,7]         Output: 5
+
+class Solution {
+    private void dfs(TreeNode root, Set<Integer> set) {
+        if (root != null) {
+            set.add(root.val);
+            dfs(root.left, set);     //暴力遍历tree的左右孩子
+            dfs(root.right, set);
+        }
+    }
+    public int findSecondMinimumValue(TreeNode root) {
+        Set<Integer> set = new HashSet<>(); //创建set，滤掉重复
+        dfs(root, set);
+        int min1 = root.val;
+        long ans = Long.MAX_VALUE; //先设为最大值
+        for (int i : set) {
+            if (min1 < i && i < ans) ans = i; //如果i大于root且i最小
+        }
+        return ans < Long.MAX_VALUE ? (int) ans : -1; //如果找到且不是MAX return
+    }
+}
+
+class Solution {
+    int res = -1;
+    public int findSecondMinimumValue(TreeNode root) {
+        if (root == null) return res;
+        //如果存在子树并且值不相等，那么较大的值就有可能是第二小的
+        if (root.left != null && root.left.val != root.right.val) {
+            //获取左右子树中将较大的值
+            int bigger = root.left.val > root.right.val ? 
+root.left.val : root.right.val;
+            //如果res是-1，bigger可能是min2，否则比较res和bigger哪个更小
+            res = res == -1 ? bigger : Math.min(res, bigger);
+            //将左右子树中值更小的树进行递归, 如果左值大，递归右子树
+            findSecondMinimumValue(root.left.val > root.right.val ? 
+root.right : root.left);
+        } else { //左右孩子相等或为空的情况 分别递归
+            findSecondMinimumValue(root.left);
+            findSecondMinimumValue(root.right);
+        }
+        return res;
+    }
+}
