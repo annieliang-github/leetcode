@@ -1,0 +1,31 @@
+1332. Remove Palindromic Subsequences
+
+Given a string s consisting only of letters 'a' and 'b'. In a single step you can remove one palindromic subsequence from s. Return the minimum number of steps to make the given string empty. 
+Input: s = "ababa"
+Output: 1
+
+相当于如果是回文，就return1，否则return2（一次全删掉"a"，一次全删掉"b"）
+
+class Solution {
+    public int removePalindromeSub(String s) {
+        if (s.equals("")) return 0;
+        if (s.equals(new StringBuilder(s).reverse().toString())) return 1;
+        return 2;
+    }
+}
+
+class Solution {
+    public int removePalindromeSub(String s) {
+        if (s.length() == 0) return 0;
+        char[] array = s.toCharArray();
+        boolean isPalindrome = true;
+        int ptr1 = 0, ptr2 = array.length - 1;
+        while (ptr1 <= ptr2) {
+            if (array[ptr1++] != array[ptr2--]) {
+                isPalindrome = false;
+                break;
+            }
+        }
+        return isPalindrome ? 1: 2;
+    }
+}
