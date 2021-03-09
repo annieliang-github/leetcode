@@ -1,0 +1,94 @@
+Given the root of a binary tree, then value v and depth d, you need to add a row of nodes with value v at the given depth d. The root node is at depth 1.
+
+Input: 
+       4
+     /   \
+    2     6
+   / \   / 
+  3   1 5   
+
+v = 1
+d = 2
+Output: 
+       4
+      / \
+     1   1
+    /     \
+   2       6
+  / \     / 
+ 3   1   5   
+
+
+Recursively: dfs O(n)/O(n)
+class Solution {
+    public TreeNode addOneRow(TreeNode root, int v, int d) {
+//d=1    直接创建一个根节点，让新的根节点的左孩子等于原来的根节点，返回此根
+        if (d == 1) {
+            TreeNode node = new TreeNode(v);
+            node.left = root;
+            return node;
+        }
+//如果 depth != d - 1，我们就需要对当前节点的子节点进行递归搜索
+        insert(root, d, v, 1);
+        return root;
+    }
+    private void insert(TreeNode node, int d, int v, int currDepth) {
+        if (node == null) return;
+        if (currDepth == d - 1) {
+            TreeNode temp = node.left;
+            node.left = new TreeNode(v);
+            node.left.left = temp;
+            
+            temp = node.right;
+            node.right = new TreeNode(v);
+            node.right.right = temp;
+        } else {
+            insert(node.left, d, v, currDepth + 1);
+            insert(node.right, d, v, currDepth + 1);
+        }
+    }
+}
+
+BFS: 时间O(n） 空间O(x) x为每行最大的width
+
+class Solution {
+    public TreeNode addOneRow(TreeNode root, int v, int d) {
+        if (d == 1) {
+            TreeNode node = new TreeNode(v);
+            node.left = root;
+            return node;
+        }
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        int depth = 1;
+
+        while (depth < d - 1) {
+
+//将 queue 中所有节点的子节点放入新的队列 temp 中
+
+            Queue<TreeNode> temp = new LinkedList<>();
+            while (!queue.isEmpty()) {
+                TreeNode node = queue.poll();
+//temp contain all nodes in d-1（增加level的前一个level）
+                if (node.left != null) temp.offer(node.left);
+                if (node.right != null) temp.offer(node.right);
+            }
+            queue = temp;  //用 temp 替代 queue
+            depth++;
+        }
+
+//此时 queue 中节点的深度为 d - 1
+//退出搜索，并为 queue 中所有节点添加新的子节点 
+
+        while (!queue.isEmpty()) { //此代码与上面相同
+            TreeNode node = queue.remove();
+            TreeNode temp = node.left;
+            node.left = new TreeNode(v);
+            node.left.left = temp;
+            temp = node.right;
+            node.right = new TreeNode(v);
+            node.right.right = temp;
+        }
+        return root;
+    }
+}
