@@ -1,0 +1,44 @@
+Given the root of a binary search tree, trim the tree so that all elements lies in [low, high]. Return the root of the trimmed binary search tree. 
+class Solution {
+    public TreeNode trimBST(TreeNode root, int low, int high) {
+        if (root == null) return null;
+        if (root.val < low) { //节点数字比low小,就把左节点全部裁掉
+            root = root.right;
+            root = trimBST(root, low, high); //裁掉之后,继续看右节点
+        } else if (root.val > high) {
+            root = root.left; //如果数字比high大,就把右节点全部裁掉
+            root = trimBST(root, low, high);
+        } else { //如果数字在区间内,左右子节点都不要
+            root.left = trimBST(root.left, low, high);
+            root.right = trimBST(root.right, low, high);
+        }
+        return root;
+    }   时间复杂度O(n）空间复杂度O(n)
+}    call stack could be as large as the number of nodes in the worst case
+
+class Solution {
+    public TreeNode trimBST(TreeNode root, int low, int high) {
+        if (root == null) return null;
+        // 找到修剪后的二叉搜索树的头节点root，root位于[low,high]区间内
+        while ((root != null) && (root.val > high || root.val < low)) {
+            //root.val大于high root就向左，否则向右
+            root = root.val > high ? root.left : root.right;
+        }
+        TreeNode curr = root;
+        while (curr != null) { // 循环迭代处理root的左子树
+            while (curr.left != null && curr.left.val < low) {
+                    curr.left = curr.left.right;
+            }
+            curr = curr.left;
+        }
+        curr = root;
+        while (curr != null) {
+            //将大于high的节点排除掉，剩下节点都在[low,high]区间内
+            while (curr.right != null && curr.right.val > high) {
+                    curr.right = curr.right.left;
+            }
+            curr = curr.right;
+        }
+        return root;
+    }
+}        
