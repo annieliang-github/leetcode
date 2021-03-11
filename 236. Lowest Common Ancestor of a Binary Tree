@@ -1,0 +1,45 @@
+Input: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
+Output: 3
+Explanation: The LCA of nodes 5 and 1 is 3.
+
+若root是p,q的最近公共祖先 ，则只可能为以下情况之一：
+p和q在root的子树中，且分列 root的异侧；
+p=root，且 q在roo的左或右子树中；
+q=root，且 p在root的左或右子树中
+
+class Solution {
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+//root包括了p或q，那就返回root（i.e.p=5,q=4,5就是4的anscestor）
+        if(root == null || root == p || root == q) return root; 
+        TreeNode left = lowestCommonAncestor(root.left, p, q);
+        TreeNode right = lowestCommonAncestor(root.right, p, q);
+if (left != null && right != null) return root; //左右都有返回  
+return left == null ? right : left; //左右至少一个为null，返回非null    }
+}
+法2：时间复杂度、空间复杂度均为O(n）
+    Map<Integer, TreeNode> parent = new HashMap<>(); //key:node.val, value:parent
+    Set<Integer> visited = new HashSet<>();
+    private void dfs(TreeNode root) {
+        if (root.left != null) {
+            parent.put(root.left.val, root);
+            dfs(root.left); //如果左孩子不是null，继续左递归
+        }
+        if (root.right != null) {
+            parent.put(root.right.val, root);
+            dfs(root.right);
+        }
+    }
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        dfs(root);
+        while (p != null) {
+            visited.add(p.val); //访问q点，放入set
+            p = parent.get(p.val); //p 结点开始不断往上跳
+        }
+        while (q != null) {
+            if (visited.contains(q.val)) { //如果已经访问过q
+                    return q; //那么q就是common ancestor
+            }
+            q = parent.get(q.val); //没访问过q，往上跳找q的parent
+        }
+        return null;
+    }
