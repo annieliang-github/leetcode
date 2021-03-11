@@ -1,0 +1,35 @@
+Given the root of a Binary Search Tree (BST), convert it to a Greater Tree such that every key of the original BST is changed to the original key plus sum of all keys greater than the original key in BST.
+
+class Solution { //recursive
+    private int sum = 0;
+public TreeNode convertBST(TreeNode root) {
+        if (root == null) return null;
+        convertBST(root.right); //反向inorder 遍历（右中左）
+        sum += root.val;
+        root.val = sum;
+        convertBST(root.left);
+        return root;
+    }
+}
+
+class Solution { //iterative
+    int sum = 0;
+    public TreeNode bstToGst(TreeNode root) {
+        if (root == null) return null;
+        TreeNode node = root;
+        Stack<TreeNode> stack = new Stack<>();
+        while (!stack.isEmpty() || node != null) { //stack不空且node不null
+            while (node != null) { //node不为null，入栈
+                stack.push(node);
+                node = node.right; //一直到最右一个子node
+            }
+            node = stack.pop();  //node为空，出栈并pop出来
+            sum += node.val;
+            node.val = sum;
+            node = node.left;
+        }
+        return root;
+    }
+}
+
+时间复杂度：O(n) 空间复杂度：平均情况下为 O(log⁡n)，最坏情况下树呈现链状，为 O(n)。
