@@ -1,0 +1,57 @@
+Given the root of a binary search tree, and an integer k, return the kth (1-indexed) smallest element in the tree.
+
+class Solution {
+    private int count, ans;
+    public int kthSmallest(TreeNode root, int k) {
+        count = 0;
+        inorder(root, k);
+        return ans;
+    }
+    private void inorder(TreeNode root, int k) {
+        if (root == null) return;
+        inorder(root.left, k); //左
+        count++;
+        if (count == k) ans = root.val; //左侧的node数是k，root就是1 indexed kth
+        else inorder(root.right, k); //recurse on right
+        return;
+    }
+}
+时间复杂度O(n)，空间复杂度O(1)
+
+class Solution {
+    public int kthSmallest(TreeNode root, int k) {
+        int leftCount = count(root.left);
+        if (leftCount == k - 1) return root.val;
+        //大于k-1向左递归，小于k-1向右递归，数量为k-1-左孩子数
+        if (leftCount > k - 1) return kthSmallest(root.left, k);
+        return kthSmallest(root.right, k - leftCount - 1);
+    }
+    private int count(TreeNode node) {
+        if (node == null) return 0;
+        return count(node.left) + count(node.right) + 1;
+    }
+}
+
+class Solution {
+    public int kthSmallest(TreeNode root, int k) {
+        Stack<TreeNode> stack = new Stack<>();
+        int num = 0, res = -1;
+        TreeNode curr = root;
+        while (curr != null || !stack.isEmpty()) {
+            while (curr != null) { //节点不为空，一直push stack
+                stack.push(curr);
+                curr = curr.left; //先去左子树
+            }
+            curr = stack.pop(); //节点为空，出栈
+            num++; //update number count
+            if (num == k) {
+                res = curr.val;
+                break;
+            }
+            curr = curr.right;
+        }
+        return res;
+    }
+}
+时间复杂度：O(H+k)，其中H指的是树的高度，当树是一个平衡树时：复杂度为 O(log⁡N+k)。当树是一个不平衡树时：复杂度为 O(N+k)，此时所有的节点都在左子树。
+空间复杂度：O(H+k)。当树是一个平衡树时：O(log⁡N+k)。当树是一个非平衡树时：O(N+k)。
