@@ -1,0 +1,29 @@
+Given an integer array nums where the elements are sorted in ascending order, convert it to a height-balanced binary search tree.
+ 
+Input: nums = [-10,-3,0,5,9]
+Output: [0,-3,9,-10,null,5]
+
+没有唯一解，但：BST的inorder traversal会出现升序数组
+
+
+
+
+选择中间数字作为二叉搜索树的根节点，这样分给左右子树的数字个数相同或只相差 1，可以使得树保持平衡。如果数组长度是奇数，则根节点的选择是唯一的，如果数组长度是偶数，则可以选择中间位置左边的数字作为根节点或者选择中间位置右边的数字作为根节点，选择不同的数字作为根节点则创建的平衡二叉搜索树也是不同的。
+
+class Solution {
+    public TreeNode sortedArrayToBST(int[] nums) {
+            return dfs(nums, 0, nums.length - 1);
+    }
+    private TreeNode dfs(int[] nums, int low, int hi) {
+        if (low > hi) return null;
+        int mid = low + (hi - low) / 2;
+        // 以升序数组的中间元素作为根节点 root
+        TreeNode root = new TreeNode(nums[mid]);
+        root.left = dfs(nums, low, mid - 1);
+        root.right = dfs(nums, mid + 1, hi);
+        return root;
+    }
+}
+
+时间复杂度：O(n)，其中 n 是数组的长度。每个数字只访问一次。
+空间复杂度：O(log⁡n)，主要取决于递归栈的深度，递归栈的深度是 O(log⁡n)
