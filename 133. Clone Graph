@@ -1,0 +1,45 @@
+Given a reference of a node in a connected undirected graph. Return a deep copy of the graph. 
+
+class Solution {
+    public Node cloneGraph(Node node) {
+        if (node == null) return null;
+        Map<Node, Node> map = new HashMap<>(); //把旧图的node映射到新图node
+//先构建node，空neighbor链表
+        Node newNode = new Node(node.val, new ArrayList<>()); 
+        map.put(node, newNode); //第一个node放入map
+        Queue<Node> queue = new LinkedList<>(); //queue用于BFS存需要访问的node
+        queue.offer(node); //先把第一个访问的ndoe放入queue
+       
+        while (!queue.isEmpty()) {
+            Node curr = queue.poll();
+            for (Node neighbor : curr.neighbors) {
+            //如果还没访问过这个neighbor
+                if (!map.containsKey(neighbor)) { 
+                    // 新图新建一个Node，旧node映射到新node，并放入map
+                    map.put(neighbor, new Node(neighbor.val, new ArrayList<>()));
+                    queue.offer(neighbor); //queue加入neighbor，已访问
+                }
+                //给新图里node之前的空链表，加neighbor
+                map.get(curr).neighbors.add(map.get(neighbor));
+            }
+        }
+        return newNode;
+    }
+}
+class Solution {
+    Map<Node, Node> map = new HashMap<>();
+    public Node cloneGraph(Node node) {
+        if (node == null) return null;
+        //如果该节点已经被访问过了，则直接从哈希表中取出对应的克隆节点返回
+        if (map.containsKey(node)) return map.get(node);
+        // 克隆节点，暂时把链表设置为空
+        Node newNode = new Node(node.val, new ArrayList<>());
+        map.put(node, newNode);
+        // 遍历该节点的邻居并更新克隆节点的邻居列表
+        for (Node neighbor : node.neighbors) {
+            newNode.neighbors.add(cloneGraph(neighbor));
+        }
+        return newNode;
+    }
+}
+时间复杂度：O(N)，空间复杂度：O(N)
