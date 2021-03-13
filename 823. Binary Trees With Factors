@@ -1,0 +1,40 @@
+Given an array of unique integers, arr, where each integer arr[i] is strictly greater than 1.
+We make a binary tree using these integers, and each number may be used for any number of times. Each non-leaf node's value should be equal to the product of the values of its children.
+Return the number of binary trees we can make. The answer may be too large so return the answer modulo 109 + 7.
+Input: arr = [2,4]
+Output: 3
+Explanation: We can make these trees: [2], [4], [4, 2, 2]
+
+class Solution {
+    
+    public int numFactoredBinaryTrees(int[] A) {
+        Arrays.sort(A);
+        //dp[i]代表以A[i]为根节点时二叉树的数量
+        long[] dp = new long[A.length];
+        long res = 0;
+        for(int i = 0 ; i < A.length ; i++){
+            // j从左边起，k从右边起
+            int j = 0, k = i - 1;
+            //dp[i]等于所有dp[j] * dp[k]求和 + 1
+            dp[i]++;
+            while(j <= k){
+                //j、k满足 A[i] = A[j] * A[k].如果j != k 需乘2，代表左右可以互换
+                if(A[j] * A[k] == A[i]){
+                    if(j != k)
+                        dp[i] += dp[j] * dp[k] *2;
+                    else
+                        dp[i] += dp[j] * dp[k];
+                    k--;
+                    j++;
+                }else if(A[j] * A[k] > A[i]){
+                    k--; //大于的话，右pointer向左
+                }else{
+                    j++;
+                }
+            }
+            res += dp[i];
+        }
+        return (int)(res % 1000000007);
+    }
+}
+时间复杂度：O(N^2) 空间复杂度：O(N)，dp 和 index 使用的空间。
