@@ -1,0 +1,41 @@
+You are given two strings s1 and s2 of equal length. A string swap is an operation where you choose two indices in a string (not necessarily different) and swap the characters at these indices.
+Return true if it is possible to make both strings equal by performing at most one string swap on exactly one of the strings. Otherwise, return false.
+Input: s1 = "bank", s2 = "kanb"
+Output: true
+
+class Solution {
+    public boolean areAlmostEqual(String s1, String s2) {
+        if (s1.length() != s2.length()) return false;
+        if (s1.equals(s2)) return true;
+        int count = 0;
+        int prev = -1, curr = -1;
+        for (int i = 0; i < s1.length(); i++) {
+            if (s1.charAt(i) != s2.charAt(i)) {
+                count++;
+                if (count > 2) return false;
+                prev = curr;
+                curr = i;
+            }
+        }
+        return (count == 2 && s1.charAt(prev) == s2.charAt(curr) 
+&& s2.charAt(prev) == s1.charAt(curr));
+    }
+}
+
+类似，直接用ArrayList
+class Solution {
+    public boolean areAlmostEqual(String s1, String s2) {
+        List<Integer> differ = new ArrayList<>();
+        for (int i = 0; i < s1.length(); i++) {
+            if (s1.charAt(i) != s2.charAt(i)) {
+                differ.add(i);
+            }
+        }
+        return differ.size() == 0 ||
+                (differ.size() == 2 &&
+                        s1.charAt(differ.get(0)) == s2.charAt(differ.get(1)) &&
+                        s1.charAt(differ.get(1)) == s2.charAt(differ.get(0))
+                );
+    }
+}
+
