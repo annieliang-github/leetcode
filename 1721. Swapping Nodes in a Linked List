@@ -1,0 +1,29 @@
+You are given the head of a linked list, and an integer k. Return the head of the linked list after swapping the values of the kth node from the beginning and the kth node from the end (the list is 1-indexed).
+ 
+
+Input: head = [1,2,3,4,5], k = 2
+Output: [1,4,3,2,5]
+
+
+
+
+class Solution {
+    public ListNode swapNodes(ListNode head, int k) {
+        ListNode kNode = head;
+//快指针先走到第k个节点的位置
+        for (int i = 1; i < k; i++) {
+            kNode = kNode.next;
+        }
+//慢指针从头出发，快指针从第k+1个节点出发
+        ListNode slow = head, fast = kNode.next;
+//当快指针指向空时，慢指针所指即为倒数第k个
+        while (fast != null) {
+            fast = fast.next;
+            slow = slow.next;
+        }
+        int temp = kNode.val;
+        kNode.val = slow.val;
+        slow.val = temp;
+        return head;
+    }
+}
