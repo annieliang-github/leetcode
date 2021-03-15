@@ -1,0 +1,24 @@
+There is an undirected star graph consisting of n nodes labeled from 1 to n. A star graph is a graph where there is one center node and exactly n - 1 edges that connect the center node with every other node.
+You are given a 2D integer array edges where each edges[i] = [ui, vi] indicates that there is an edge between the nodes ui and vi. Return the center of the given star graph.
+Input: edges = [[1,2],[2,3],[4,2]]
+Output: 2
+
+
+
+
+n 个点 n - 1 条边必然是树。因为是星型图，所以叶子结点的度数均为 1. 只要一个节点在边中出现了两次以上，它必然是中心节点。
+
+class Solution {
+    public int findCenter(int[][] edges) {
+        Set<Integer> set = new HashSet<>();
+        for (int[] edge : edges) {
+            for (int e : edge) {
+                if (set.contains(e)) {
+                    return e;
+                }
+                set.add(e);
+            }
+        }
+        return -1;
+    }
+}
