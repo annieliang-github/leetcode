@@ -1,0 +1,31 @@
+You are given an array of integers nums (0-indexed) and an integer k. The score of a subarray (i, j) is defined as min(nums[i], nums[i+1], ..., nums[j]) * (j - i + 1). A good subarray is a subarray where i <= k <= j. Return the maximum possible score of a good subarray.
+ 
+Input: nums = [1,4,3,7,4,5], k = 3
+Output: 15
+
+Explanation: The optimal subarray is (1, 5) with a score of min(4,3,7,4,5) * (5-1+1) = 3 * 5 = 15. 
+
+class Solution {
+    public int maximumScore(int[] nums, int k) {
+        int length = nums.length, left = k, right = k;
+int min = nums[k], score = nums[k];
+        
+        while (left > 0 || right < length - 1) {
+//如果左ptr==0即为base case，向右移动右ptr
+            if (left == 0) right++; 
+        //如果右不能再走即为base case，向左移动左ptr
+            else if (right == length - 1) left--; 
+            // 想要最大化min，左右两边哪边value大，ptr就像那边移动
+            else if (nums[left - 1] > nums[right + 1]) left--;
+            else right++;
+
+            // 滑动窗口后，更新最小值
+            int newMin = Math.min(nums[left], nums[right]);
+            min = Math.min(min, newMin);
+            int newScore = min * (right - left + 1);
+            score = Math.max(score, newScore);
+        }
+        return score;
+    }
+}
+
