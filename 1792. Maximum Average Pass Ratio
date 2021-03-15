@@ -1,0 +1,35 @@
+There is a school that has classes of students and each class will be having a final exam. You are given a 2D integer array classes, where classes[i] = [passi, totali]. You know beforehand that in the ith class, there are totali total students, but only passi number of students will pass the exam.
+You are also given an integer extraStudents, they are guaranteed to pass the exam of any class they are assigned to. You want to assign each of the extraStudents students to a class in a way that maximizes the average pass ratio across all the classes.
+Return the maximum possible average pass ratio after assigning the extraStudents students. 
+Input: classes = [[1,2],[3,5],[2,2]], extraStudents = 2
+Output: 0.78333
+Explanation: You can assign the two extra students to the first class. The average pass ratio will be equal to (3/4 + 3/5 + 2/2) / 3 = 0.78333.
+
+class Solution {
+    public double maxAverageRatio(int[][] classes, int extraStudents) {
+        //构造一个maxheap，把增加一个extra student后的change ratio进行比较，大的放前面
+        PriorityQueue<int[]> pq = new PriorityQueue<>(
+            (a,b) -> {
+                double c1 = (a[0] + 1) * 1.0 / (a[1] + 1) - a[0] * 1.0 / a[1];
+                double c2= (b[0] + 1) * 1.0 / (b[1] + 1) - b[0] * 1.0 / b[1];
+                return Double.compare(c2, c1); //
+            }
+        );
+        
+        for (int[] i : classes) {
+            pq.offer(i); //遍历课程，把每门课放入max heap
+        }
+        while (extraStudents > 0) {
+            int[] currClass = pq.poll(); 
+//分子分母均加1个student
+            pq.offer(new int[] {currClass[0] + 1, currClass[1] + 1}); 
+            extraStudents--;
+        }
+        double sum = 0.0;
+        while (!pq.isEmpty()) {
+            int[] curr = pq.poll();
+            sum += curr[0] * 1.0 / curr[1];
+        }
+        return sum / classes.length;
+    }
+}
