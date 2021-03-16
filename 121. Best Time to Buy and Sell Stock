@@ -1,0 +1,41 @@
+You are given an array prices where prices[i] is the price of a given stock on the ith day. Maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock. 
+Return the maximum profit you can achieve from this transaction. If you cannot achieve any profit, return 0.
+
+Input: prices = [7,1,5,3,6,4] Output: 5
+Explanation: Buy on day 2 (price = 1) and sell on day 5 (price = 6), profit = 5.
+先选一个最低点i，向后遍历的时候看它的最高点是什么； 如果发现更低的最低点j，那么就以新的j替换i，因为此后出现的最高点k，k-j > k-i；而在j之前出现的高点，都和j没有关系。
+class Solution {
+    public int maxProfit(int[] prices) {
+        int minPrice = Integer.MAX_VALUE;
+        int maxProfit = 0;
+        for (int i = 0; i < prices.length; i++) {
+            if (prices[i] < minPrice) minPrice = prices[i]; //找到价格最低点
+            //进入else循环说明：价格比min高，且profit比之前多
+            else if (prices[i] - minPrice > maxProfit) 
+maxProfit = prices[i] - minPrice;
+        }
+        return maxProfit;
+    }
+}
+时间复杂度：O(n)，只需要遍历一次。空间复杂度：O(1)，只使用了常数个变量。
+
+class Solution {
+    public int maxProfit(int[] prices) {
+        if (prices.length < 2) return 0;
+        int[][] dp = new int[prices.length][2];
+        // dp[i][0] 下标为 i 这天结束的时候，不持股，手上拥有的现金数
+        // dp[i][1] 下标为 i 这天结束的时候，持股，手上拥有的现金数
+        dp[0][0] = 0; // 初始化：不持股显然为 0
+        dp[0][1] = -prices[0]; //持股就需要减去第 1 天（下标为 0）的股价
+        
+        for (int i = 1; i < prices.length; i++) { //从第二天开始遍历
+            //当日结束不持股，max（前一天不持股，或者持股+卖了的利润）
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i]);
+            //当日结束持股，max（前一天持股不动，或者前一天不持股今日买入）
+            dp[i][1] = Math.max(dp[i - 1][1], -prices[i]);
+        }
+        //最后输出 dp[len - 1][0]，因为要把股票卖了所以[0]
+        return dp[prices.length - 1][0];
+    }
+}
+时间复杂度：O(N)，遍历股价数组可以得到最优解；空间复杂度：O(N)，状态数组的长度为 N。
