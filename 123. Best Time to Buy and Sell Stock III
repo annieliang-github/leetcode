@@ -1,0 +1,40 @@
+You are given an array prices where prices[i] is the price of a given stock on the ith day. Find the maximum profit by completing at most two transactions.
+class Solution {
+    public int maxProfit(int[] prices) {
+        int length = prices.length;
+        if (length < 2) return 0;
+        //人为规定 记录一次交易产生是在 买入股票 的时候
+        //dp[i][j][k] 表示在第i天交易进行了 j 次，并且状态为 k 的现金数
+        //j = 0 表示没有交易发生；j = 1买了一次股票；j = 2 买了2次股票
+        //k = 0 表示当前不持股，k = 1 表示当前持股
+        //没发生交易的话dp[][0][]没意义，后续for循环中忽略，只考虑1、2
+        int[][][] dp = new int[length][3][2];
+        dp[0][1][1] = -prices[0]; //第1天持股，交易一次，花费prices[0]
+        //初始化为负无穷
+        dp[0][2][1] = Integer.MIN_VALUE; //第一天交易2次并且持股，这是不可能的
+        
+        for (int i = 1; i < length; i++) {
+   //第i天发生1次交易且持股，前一天就持有今天没动，或者前一天没有今天买入
+            dp[i][1][1] = Math.max(dp[i-1][1][1], -prices[i]);
+   //第i天发生交易且不持股，前一天就卖了今天不动，或者前一天持股今天卖了+利润
+            dp[i][1][0] = Math.max(dp[i-1][1][0], dp[i-1][1][1] + prices[i]);
+   //同第一行，前一天没有今天买入，需减去花费
+            dp[i][2][1] = Math.max(dp[i-1][2][1], dp[i-1][1][0]-prices[i]);
+            dp[i][2][0] = Math.max(dp[i-1][2][0], dp[i-1][2][1] + prices[i]);
+        }
+         //最后一天不持股的状态都可能成为最大利润 1或2次交易均可
+        return Math.max(dp[length - 1][1][0], dp[length - 1][2][0]);
+    }
+}
+
+滚动数组优化空间：      
+        int buy1 = -prices[0], sell1 = 0;
+        int buy2 = -prices[0], sell2 = 0;
+        for (int i = 1; i < n; ++i) {
+            buy1 = Math.max(buy1, -prices[i]);
+            sell1 = Math.max(sell1, buy1 + prices[i]);
+            buy2 = Math.max(buy2, sell1 - prices[i]);
+            sell2 = Math.max(sell2, buy2 + prices[i]);
+        }
+        return sell2;
+    
