@@ -1,0 +1,40 @@
+478. Generate Random Point in a Circle
+
+Given the radius and x-y positions of the center of a circle, write a function randPoint which generates a uniform random point in the circle.
+Note:
+input and output values are in floating-point.
+radius and x-y position of the center of the circle is passed into the class constructor.
+a point on the circumference of the circle is considered to be in the circle.
+randPoint returns a size 2 array containing x-position and y-position of the random point, in that order.
+class Solution {
+
+    double xc, yc, r;
+    
+    //x*x+y*y<=r*r，r是圆的半径，满足这个方程的x, y即在圆内。
+    //我们想在这个圆内等概率生成点，就相当于有无数个圆环
+    //x = 最左 + random*2r
+    //y = 最下 + random*2r
+
+    public Solution(double radius, double x_center, double y_center) {
+        xc = x_center;
+        yc = y_center;
+        r = radius;
+    }
+    
+    public double[] randPoint() {
+        double x0 = xc - r; //最左边的半径x坐标
+        double y0 = yc - r; //最下边的半径y坐标
+        
+        while (true) {
+            double x = x0 + Math.random() * r * 2;
+            double y = y0 + Math.random() * r * 2;
+            if (Math.sqrt(Math.pow((x-xc) , 2) + Math.pow((y-yc), 2)) <= r) {
+                    return new double[]{x, y};
+            }
+        }
+            
+    }
+}
+
+时间复杂度O(1)，最坏情况下可能正无穷（一直被拒绝）
+空间复杂度O(1)。
