@@ -1,1 +1,23 @@
 
+Given the root of a Binary Search Tree and a target number k, return true if there exist two elements in the BST such that their sum is equal to the given target.
+class Solution {
+    public boolean findTarget(TreeNode root, int k) {
+        List<Integer> list = new ArrayList<>();
+        inorder(root, list); //中序遍历BFS后，得到升序数组
+        int left = 0, right = list.size() - 1;
+        while (left < right) {
+            int sum = list.get(left) + list.get(right);
+            if (sum == k) return true;
+            else if (sum < k) left++;
+            else if (sum > k) right--;
+        }
+        return false;
+    }
+    private void inorder(TreeNode root, List<Integer> list) {
+        if (root == null) return; 
+        inorder(root.left, list);
+        list.add(root.val);
+        inorder(root.right, list);
+    }
+}
+时间复杂度O(n）：遍历每一个node，空间复杂度O(n)：数组的长度
