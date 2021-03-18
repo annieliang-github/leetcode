@@ -21,3 +21,38 @@ class Solution {
     }
 }
 时间复杂度O(n）：遍历每一个node，空间复杂度O(n)：数组的长度
+
+
+class Solution { //dfs 递归解法
+    public boolean findTarget(TreeNode root, int k) {
+        Set<Integer> set = new HashSet<>();
+        return find(root, k, set);
+    }
+    private boolean find(TreeNode root, int k, Set<Integer> set) {
+        if (root == null) return false;
+        //对于每个值为p的节点，在set中检查是否存在k-p
+        if (set.contains(k - root.val)) return true;
+        set.add(root.val); //如果set中不包括k-p的信息，放p入set
+        //如果遍历完都没有找到一对节点和为k，则不存在两个和为k的节点
+        return find(root.left, k, set) || find(root.right, k, set);
+    }
+}
+
+class Solution { //bfs queue解法
+    public boolean findTarget(TreeNode root, int k) {
+        Set<Integer> set = new HashSet<>();
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode node = queue.poll();
+                if (set.contains(k - node.val)) return true;
+                set.add(node.val);
+                if (node.left != null) queue.offer(node.left);
+                if (node.right != null) queue.offer(node.right);
+            }    
+        }
+        return false;
+    }
+}
