@@ -1,0 +1,21 @@
+Given a binary search tree with non-negative values, find the minimum absolute difference between values of any two nodes.
+利用BST中序遍历为有序的性质，计算中序遍历中临近的两个节点之差的绝对值，取最小值。
+在中序遍历的过程中用pre变量保存前驱节点的值，这样即能边遍历边更新答案，不再需要显式创建数组来保存
+
+class Solution {
+    int minDiff = Integer.MAX_VALUE;
+//pre的初始值需要设置成任意负数标记开头
+int pre = -1;
+public int getMinimumDifference(TreeNode root) {
+        inorder(root);
+        return minDiff;
+    }
+    private void inorder(TreeNode root) {
+        if (root == null) return;
+        inorder(root.left);
+        if (pre != -1) minDiff = Math.min(minDiff, root.val - pre);
+        pre = root.val;
+        inorder(root.right);
+    }
+}
+时间复杂度O(n）：遍历每一个node，空间复杂度O(n)：递归栈的深浅
