@@ -1,0 +1,43 @@
+501. Find Mode in Binary Search Tree
+
+Given the root of a binary search tree (BST) with duplicates, return all the mode(s) (i.e., the most frequently occurred element) in it. If the tree has more than one mode, return them in any order.
+class Solution {
+    
+    //用 base 记录当前的数字，用 count 记录当前数字重复的次数
+    //用 maxCount 维护已经扫描过的数当中出现最多的那个数字的出现次数
+    List<Integer> ans = new ArrayList<>();
+    int base, count, maxCount;
+    
+    public int[] findMode(TreeNode root) {
+        dfs(root);
+        int[] mode = new int[ans.size()]; //把arrayList转array
+        for (int i = 0; i < mode.length; i++) {
+            mode[i] = ans.get(i);
+        }
+        return mode;
+    }
+    private void dfs(TreeNode root) {
+//一棵二叉搜索树的中序遍历序列是一个非递减的有序序列
+        if (root == null) return;
+        dfs(root.left);
+        update(root.val);
+        dfs(root.right);
+    }
+
+    private void update(int x) {
+        if (x == base) count++; //如果该元素和 base 相等，那么 count 自增 1；
+        else { //否则将 base 更新为当前数字，count 复位为 1
+            base = x;
+            count = 1;
+        }
+
+//base出现的次数等于maxCount，将 base 加入 ans；
+        if (count == maxCount) ans.add(base);
+//否则更新maxCount，清空ans后，将 base加入 ans
+        else if (count > maxCount) {
+            maxCount = count;
+            ans.clear();
+            ans.add(base);
+        }
+    }
+}        时间复杂度O(n）遍历整棵树，空间复杂度O(n) 递归所需空间
