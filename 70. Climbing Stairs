@@ -1,0 +1,33 @@
+You are climbing a staircase. It takes n steps to reach the top. Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
+DP和recursion：
+class Solution {
+    public int climbStairs(int n) {
+        //dp array: 有几种方法to climb ith stair
+        int[] dp = new int[n + 1];
+        dp[0] = 1; //只有一种方法climb 0 stair：不爬
+        dp[1] = 1; //只有一种方法climb 1 stair：爬一格
+        for (int i = 2; i < n + 1; i++) {
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+        return dp[n];
+    }
+}
+时间复杂度O(n），空间复杂度O(n）维护数组
+
+Iteratively：
+class Solution {
+    public int climbStairs(int n) {
+        int step0 = 1; //上0步，1种方法：保持不动
+        int step1 = 1; //上1步，1种方法
+        int total = 0;
+        if (n == 1) return 1;
+        for (int i = 2; i <= n; i++) {
+            total = step0 + step1;
+            step0 = step1;
+            step1 = total;
+        }
+        return total;
+    }
+}
+时间复杂度O(n），空间复杂度O(1）
+
