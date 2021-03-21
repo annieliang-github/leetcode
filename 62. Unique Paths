@@ -1,1 +1,45 @@
 
+A robot is located at the top-left corner of a m x n grid. The robot can only move either down or right at any point in time. below). How many possible unique paths?
+class Solution {
+    public int uniquePaths(int m, int n) {
+        //令 dp[i][j] 是到达 i, j 最多路径
+        int[][] dp = new int[m][n];
+        //对于第一行或第一列，都是在边界，所以只能为 1
+        for (int i = 0; i < n; i++) dp[0][i] = 1;
+        for (int i = 0; i < m; i++) dp[i][0] = 1;
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                //想到(i,j)，向下走会从(i−1,j)走过来,向右会从(i,j−1)走过来
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+            }
+        }
+        return dp[m - 1][n - 1];
+    }
+}                时间复杂度O(mn)，空间复杂度O(mn): 
+当前坐标的值只和左边与上面的值有关，因此我们可以使用滚动数组，使空间复杂度降低为 O(n)
+
+class Solution {
+    public int uniquePaths(int m, int n) {
+        int[] array = new int[n];
+        Arrays.fill(array, 1);
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                array[j] += array[j - 1];
+            }
+        }
+        return array[n - 1];
+    }
+}
+
+以下代码为动态规划改递归，时间严重超时，因为重复计算：
+
+public int uniquePaths(int m, int n) {
+    return uniquePathsHelper(1, 1, m, n);
+}
+public int uniquePathsHelper(int i, int j, int m, int n) {
+    if (i > m || j > n) return 0;
+    if ((i == m && j == n)) return 1;
+    int right = uniquePathsHelper(i + 1, j, m, n);
+    int down = uniquePathsHelper(i, j + 1, m, n);
+    return right + down;
+}
