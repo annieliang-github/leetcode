@@ -1,1 +1,46 @@
 
+class Solution {
+    public int uniquePathsWithObstacles(int[][] obstacleGrid) {
+        if (obstacleGrid == null || obstacleGrid.length == 0) return 0;
+          int m = obstacleGrid.length, n = obstacleGrid[0].length;
+        int[][] dp = new int[m][n];
+
+    //先把第一行和第一列，没有障碍物的地方，填成1
+        for (int i = 0; i < m && obstacleGrid[i][0] == 0; i++) {
+            dp[i][0] = 1; //注意i是row，j是col
+        }
+        for (int j = 0; j < n && obstacleGrid[0][j] == 0; j++) {
+            dp[0][j] = 1;
+        }
+        // 根据状态转移方程 dp[i][j] = dp[i - 1][j] + dp[i][j - 1] 进行递推。
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                if (obstacleGrid[i][j] == 0) { //只管不是障碍的地方
+                    dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+                }
+            }
+        }
+        return dp[m - 1][n - 1];
+    }
+}            时间复杂度O(mn) 空间复杂度O(mn），空间可优化成O(n)
+
+class Solution {
+    public int uniquePathsWithObstacles(int[][] obstacleGrid) {
+        int m = obstacleGrid.length, n = obstacleGrid[0].length;
+        // m为行数，n为列数，注意：滚动数组的长度为n
+        int[] dp = new int[n];
+        dp[0] = obstacleGrid[0][0] == 0 ? 1 : 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j< n; j++) {
+                if (obstacleGrid[i][j] == 1) { //如果有障碍
+                    dp[j] = 0;
+                    continue;
+                }
+                if (j - 1 >= 0 && obstacleGrid[i][j - 1] == 0) {
+                    dp[j] += dp[j - 1]; //j不越界且没有障碍
+                }
+            }
+        }
+        return dp[n - 1];
+    }
+}
