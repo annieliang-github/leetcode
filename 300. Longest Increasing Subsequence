@@ -2,3 +2,49 @@
 Given an integer array nums, return the length of the longest strictly increasing subsequence.
 
 A subsequence is a sequence that can be derived from an array by deleting some or no elements without changing the order of the remaining elements. For example, [3,6,2,7] is a subsequence of the array [0,3,1,6,2,2,7].
+
+class Solution { //法1：DP
+    public int lengthOfLIS(int[] nums) {
+        int length = nums.length;
+        if (length < 2) return length; //如果只有1或0个数字
+        //dp[i] 表示：以 nums[i] 结尾 的「上升子序列」的长度(including nums[i])
+        int[] dp = new int[length];
+        Arrays.fill(dp, 1); //每个数字都是以自己为结尾的最长子序列
+        for (int i = 1; i < length; i++) {
+            for (int j = 0; j < i; j++) { //若j<i且nums[j]<nums[i]，dp[j]+1
+                if (nums[j] < nums[i]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+        }
+        //要从头遍历dp数组，找到最大的那个dp[i]的subsequence长度
+        int ans = 1;
+        for (int i = 0; i < length; i++) {
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
+    }
+}            时间复杂度O(n^2),空间复杂度O(n）
+
+法2：greedy + 二分查找：i.e.:10 9 2 5 3 7 101 18 4 8 6 12， 读到4的时候，找到第一个结尾比4大的上升子序列，将结尾改成4，同时将下放所有数都改成4，时间复杂度O(nlogn）
+
+public int lengthOfLIS(int[] nums) { //判断length同上，已省略
+          int[] tail = new int[length]; //长度为 i + 1 的上升子序列的末尾最小是几
+        tail[0] = nums[0]; //第一个数即为tail[0]
+        int end = 0; //tail的最后一个已经赋值元素的idx
+        for (int i = 1; i < length; i++) {
+            if (nums[i] > tail[end]) { //比实际有效的末尾的那个元素还大
+                end++;
+                tail[end] = nums[i]; //increment index，直接加在末尾
+            } else {
+                int left = 0, right = end;
+                while (left < right) {
+                    int mid = left + (right - left) / 2;
+                    if (tail[mid] < nums[i]) left = mid + 1;
+                    else right = mid;
+                }
+                tail[left] = nums[i]; //此时一定能找到第1个大于等于nums[i]的元素
+            }
+        }
+        return ++end; // end最后一个元素的idx,返回长度的话还需要+1
+}
