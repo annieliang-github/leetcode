@@ -1,0 +1,42 @@
+Given an integer array nums, find a contiguous non-empty subarray within the array that has the largest product, and return the product. A subarray is a contiguous subsequence of the array.
+Input: nums = [2,3,-2,4] Output: 6
+要比较 Max（dp[i], max[i - 1] * num[i], min[i - 1 * num[i]）三个数取最大。
+//由于存在负数，那么会导致最大的变最小的，最小的变最大的, 需要维护当前最小值min
+
+public int maxProduct(int[] nums) {
+        if (nums == null || nums.length == 0) return 0;
+        int[] dpMax = new int[nums.length];
+        int[] dpMin = new int[nums.length];         
+        System.arraycopy(nums, 0, dpMax, 0, nums.length);   //要先copy到dp中
+        System.arraycopy(nums, 0, dpMin, 0, nums.length);    //比如遇到[0, 2]的情况
+        dpMax[0] = nums[0];
+        dpMin[0] = nums[0];
+        
+//没法直接max(x,y,z) 只能两个取max再和第三个比
+        for (int i = 1; i < nums.length; i++) { 
+        dpMax[i]=Math.max(Math.max(dpMax[i],dpMax[i-1]*nums[i]), dpMin[i-1]*nums[i]);
+        dpMin[i]=Math.min(Math.min(dpMin[i],dpMin[i-1]*nums[i]), dpMax[i-1]*nums[i]);
+        }
+        int ans = dpMax[0];
+        for (int i = 1; i < nums.length; ++i) { //loop一遍取到最大值返回
+            ans = Math.max(ans, dpMax[i]);
+        }
+        return ans;
+}                        时间复杂度O(n) 空间复杂度O(n)
+
+优化空间变为O(1)：
+public int maxProduct(int[] nums) {
+    int n = nums.length;
+        int max = 1, min = 1, maxResult = Integer.MIN_VALUE;
+        for(int i = 0; i < n; i++){
+                 if(nums[i] < 0) { //如果为负，最大变为最小，所以max、min交换
+                int temp = max;
+                max = min;
+                min = temp;
+            }
+                 max = Math.max(max * nums[i], nums[i]);
+            min = Math.min(min * nums[i], nums[i]);
+            maxResult = Math.max(max, maxResult);
+        }
+        return maxResult;
+}
