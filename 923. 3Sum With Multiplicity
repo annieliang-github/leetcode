@@ -1,1 +1,45 @@
 
+Given an integer array arr, and an integer target, return the number of tuples i, j, k such that i < j < k and arr[i] + arr[j] + arr[k] == target. As the answer can be very large, return it modulo 109 + 7. (// n choose k 展开后为：n!/(n-k)!k!)
+class Solution {
+    public int threeSumMulti(int[] A, int target) {
+        int MOD = 1_000_000_007;
+        long[] count = new long[101]; //因为条件里给定数组的元素值不超过100
+        for (int x: A) count[x]++; //count数组表示每个元素的个数
+        long ans = 0;
+         //如果 x，y，z 各不相同，有 count[x] * count[y] * count[z] 种组合
+        for (int x = 0; x <= 100; ++x)
+            for (int y = x + 1; y <= 100; ++y) {
+                int z = target - x - y;
+                if (y < z && z <= 100) {
+                    ans += count[x] * count[y] * count[z];
+                    ans %= MOD;
+                }
+            }
+        //如果 x == y != z，有 (count[x] choose 2)∗count[z] 种组合
+        for (int x = 0; x <= 100; ++x) {
+            int z = target - 2*x;
+            if (x < z && z <= 100) {
+                ans += count[x] * (count[x] - 1) / 2 * count[z];
+                ans %= MOD;
+            }
+        }
+        //如果 x != y == z，有 count[x]∗(count[y] choose 2) 种组合
+        for (int x = 0; x <= 100; ++x) {
+            if (target % 2 == x % 2) {
+                int y = (target - x) / 2;
+                if (x < y && y <= 100) {
+                    ans += count[x] * count[y] * (count[y] - 1) / 2;
+                    ans %= MOD;
+                }
+            }
+        }
+          if (target % 3 == 0) { //如果 x == y == z，有 (count[x] choose 3) 种组合
+            int x = target / 3;
+            if (0 <= x && x <= 100) {
+                ans += count[x] * (count[x] - 1) * (count[x] - 2) / 6;
+                ans %= MOD;
+            }
+        }
+        return (int) ans;
+    }
+}
