@@ -1,1 +1,41 @@
 
+Given a string s, partition s such that every substring of the partition is a palindrome. Return all possible palindrome partitioning of s.
+Input: s = "aab"
+Output: [["a","a","b"],["aa","b"]]
+
+class Solution {
+    public List<List<String>> partition(String s) {
+        List<List<String>> ans = new ArrayList<>();
+        if (s == null || s.length() == 0) return ans;
+        helper(ans, new ArrayList<>(), s, 0);
+        return ans;
+    }
+    
+    void helper(List<List<String>> ans, List<String> curr, String s, int lo) {
+        if (lo == s.length()) { //已经处理到最后一个
+        //将curr加入ans，因为是地址值，不能直接加入，需要加个新new的
+            ans.add(new ArrayList(curr)); 
+            return;
+        }
+        int length = s.length();
+        for (int i = lo; i < length; i++) {
+            if (isPalindrome(s, lo, i)) { //如果回文
+                curr.add(s.substring(lo, i + 1)); //substr不包括结尾index
+                helper(ans, curr, s, i + 1); //继续recurse
+        //本次递归完需要回到本次循环的上一层状态(回溯)
+                curr.remove(curr.size() - 1); //把最后一个加上去的删除
+            }
+            
+        }
+    }
+    private boolean isPalindrome(String s, int lo, int hi) {
+        while (lo <= hi) {
+            if (s.charAt(lo) != s.charAt(hi)) return false;
+            lo++;
+            hi--;
+        }
+        return true;
+    }
+}
+
+时间复杂度O(n * 2^n), 最坏的情况下有2^n种分割方法
