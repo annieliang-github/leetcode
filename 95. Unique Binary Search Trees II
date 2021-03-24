@@ -1,0 +1,37 @@
+Given an integer n, return all the structurally unique BST's (binary search trees), which has exactly n nodes of unique values from 1 to n. Return the answer in any order.
+
+class Solution {
+    public List<TreeNode> generateTrees(int n) {
+        List<TreeNode> ans = new ArrayList<>();
+        if (n == 0) return ans;
+        return getTrees(1, n);
+    }
+    
+    private List<TreeNode> getTrees(int start, int end) {
+        List<TreeNode> ans = new ArrayList<>();
+        // 此时没有数字，当前子树为空，必须要加null
+        if (start > end) {
+            ans.add(null);
+            return ans;
+        }
+        if (start == end) {
+            TreeNode tree = new TreeNode(start);
+            ans.add(tree);
+            return ans;
+        }
+        // 遍历所有数字，需包含start和end，此时为一条线树
+        for (int i = start; i <= end; i++) { //尝试每个数字为root
+            List<TreeNode> left = getTrees(start, i - 1);
+            List<TreeNode> right = getTrees(i + 1, end);
+            for (TreeNode treeLeft : left) { //把左右树拼接
+                for (TreeNode treeRight : right) { //分别遍历左右树
+                    TreeNode root = new TreeNode(i);
+                    root.left = treeLeft;
+                    root.right = treeRight;
+                    ans.add(root);
+                }
+            }
+        }
+        return ans;
+    }
+}
