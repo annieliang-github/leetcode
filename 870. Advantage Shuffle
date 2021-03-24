@@ -1,0 +1,41 @@
+Given two arrays A and B of equal size, the advantage of A with respect to B is the number of indices i for which A[i] > B[i]. Return any permutation of A that maximizes its advantage with respect to B.
+Input: A = [2,7,11,15], B = [1,10,4,11]
+Output: [2,11,7,15]
+
+先排序A和B，用手中最弱的A牌来与B配对，使A中剩余的牌严格地变大，因此会有更多得分点
+
+class Solution {
+    public int[] advantageCount(int[] A, int[] B) {
+        //或者也可以用数组存储 int[][] pair = new int[n][2];
+
+        Pair<Integer, Integer>[] BPair = new Pair[B.length]; 
+        for (int i = 0; i < B.length; i++) {
+            BPair[i] = new Pair(i, B[i]);   // 记录位置
+        }
+        
+        int[] sortA = A.clone(); //先克隆再排序
+        Arrays.sort(sortA);
+
+       //a-b是从小到大排序
+    //如果是数组：Arrays.sort(pair, (x, y)->x[0] - y[0]);
+
+        Arrays.sort(BPair, (a, b) -> a.getValue() - b.getValue()); 
+        int[] ans = new int[A.length];
+        
+        int i = 0, j = 0;
+        while (i < A.length) {
+            if (sortA[i] > BPair[j].getValue()) { //如果A值大于B值
+                ans[BPair[j].getKey()] = sortA[i];  //存入B对应的index
+                i++;
+                j++;
+            } else { //因为要最大值，如果不符，只能放在后面
+                //此处距离用A.length-1-（i-j）计算
+                ans[BPair[A.length-1-i+j].getKey()] = sortA[i];
+                i++; //此时还没找到比这个B[j]大的，j不动
+            }
+        }
+        return ans;
+    }
+}
+
+时间复杂度：O(nlogn) 排序所用时间，空间复杂度：O(n)
