@@ -1,0 +1,50 @@
+Given a triangle array, return the minimum path sum from top to bottom.
+
+For each step, you may move to an adjacent number of the row below. More formally, if you are on index i on the current row, you may move to either index i or index i + 1 on the next row.
+
+ 
+
+Example 1:
+
+Input: triangle = [[2],[3,4],[6,5,7],[4,1,8,3]]
+Output: 11
+Explanation: The triangle looks like:
+   2
+  3 4
+ 6 5 7
+4 1 8 3
+The minimum path sum from top to bottom is 2 + 3 + 5 + 1 = 11 (underlined above).
+
+
+class Solution {
+    public int minimumTotal(List<List<Integer>> triangle) {
+        // 2
+        // 3 4
+        // 6 5 7        把上面的三角形对齐
+        // 4 1 8 3
+        //给定的三角形的行数为n，并且第i行(从idx 0开始)包含了i+1个数
+        //只要不是第一列（j!=0）位置上的数，都能通过左上方转移过来
+        //只要不是每行最后一列（j!=i）位置上的数，都能通过上方转移而来
+
+        int length = triangle.size();
+        int ans = Integer.MAX_VALUE;
+        int[][] dp = new int[length][length]; 
+        dp[0][0] = triangle.get(0).get(0);
+        for (int i = 1; i < length; i++) {
+            for (int j = 0; j < i + 1; j++) {
+                int val = triangle.get(i).get(j);
+        // 至关重要！！！先要initialize table，每个位置都放最大值
+                dp[i][j] = Integer.MAX_VALUE;
+                if (j!=0) dp[i][j] = Math.min(dp[i][j], dp[i-1][j-1]+val);
+                if (j!=i) dp[i][j] = Math.min(dp[i][j], dp[i-1][j] + val);
+            }
+        }
+        for (int i = 0; i < length; i++) {
+            //遍历最后一行的每列的路径和 取最小值
+            ans = Math.min(ans, dp[length - 1][i]);
+        }
+        return ans;
+    }
+}
+
+时间复杂度：O(n^2)，空间复杂度：O(n^2)
