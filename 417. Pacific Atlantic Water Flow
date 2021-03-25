@@ -1,2 +1,45 @@
 
 Given an m x n matrix of non-negative integers representing the height of each unit cell in a continent, the "Pacific ocean" touches the left and top, the "Atlantic ocean" touches the right and bottom. Water can only flow from a cell to another one with height equal or lower. Find the list of grid coordinates where water can flow to both the Pacific and Atlantic ocean.
+
+
+class Solution {
+    int[] dx = {0, 0, -1, 1}; //合起来即为上下左右的方向
+    int[] dy = {1, -1, 0, 0};
+    public List<List<Integer>> pacificAtlantic(int[][] matrix) {
+        List<List<Integer>> ans = new ArrayList<>();
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) 
+return ans;
+        int n = matrix.length, m = matrix[0].length;
+        boolean[][] pacific = new boolean[n][m]; //该坐标的点是否可以到达
+        boolean[][] atlantic = new boolean[n][m];
+        
+        for (int i = 0; i < m; i++) { // 第一行到pacific, 最后一行到atlantic
+            dfs(matrix, pacific, Integer.MIN_VALUE, 0, i); // 遍历每一列
+            dfs(matrix, atlantic, Integer.MIN_VALUE, n - 1, i);
+        }
+        for (int i = 0; i < n; i++) { // 第一列到pacific, 最后一列到atlantic
+            dfs(matrix, pacific, Integer.MIN_VALUE, i, 0); // 遍历每一行
+            dfs(matrix, atlantic, Integer.MIN_VALUE, i, m - 1);
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) { //如果都为true
+                if (pacific[i][j] && atlantic[i][j]) {
+                    List<Integer> temp = new ArrayList<>();
+                    temp.addAll(Arrays.asList(i, j)); //[i, j]
+                    ans.add(temp);
+                }       
+            }
+        }
+        return ans;
+    }
+// 想要从最靠近海洋的一层往里找，看是否有比最外一层height大的数字
+private void dfs(int[][] matrix, boolean[][] ocean, int height, int i, int j) {
+        int n = matrix.length, m = matrix[0].length;
+        // 如果坐标越界，或者matrix[i][j] < height, 或者已经访问过
+        if (i<0||i>=n||j<0||j>=m|| visited[i][j] || matrix[i][j] < height) return;
+        ocean[i][j] = true; //表明可以分别到达两个海洋
+        for (int k = 0; k < 4; k++) { //上下左右recurse
+            dfs(matrix, visited, matrix[i][j], i + dx[k], j + dy[k]);
+        }
+    }
+}            时间复杂度 O(mn) 空间复杂度O(mn)
