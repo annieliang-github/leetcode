@@ -1,1 +1,39 @@
 
+We are given two arrays A and B of words. Each word is a string of lowercase letters.
+Now, say that word b is a subset of word a if every letter in b occurs in a, including multiplicity.  For example, "wrr" is a subset of "warrior", but is not a subset of "world". If a word a from A is universal if for every b in B, b is a subset of a. Return a list of all universal words in A.  
+Input: A = ["amazon","apple","facebook","google","leetcode"], B = ["e","o"]
+Output: ["facebook","google","leetcode"]
+
+不用检验A是否含所有B，只要检验A是否含有maxB即可。比如：A = "warrior" , B = ["wrr", "wa", "or"]，按照字母出现的最多次数将 B 中所有单词合并成一个 "arrow"，然后判断一次
+
+class Solution {
+    public List<String> wordSubsets(String[] A, String[] B) {
+        List<String> ans = new ArrayList<>();
+        int[] bmax = count(""); // 先放一个空string传入helper，作为bmax
+        for (String b : B) {
+            int[] bCount = count(b);
+            for (int i = 0; i < 26; i++) {
+                bmax[i] = Math.max(bmax[i], bCount[i]); 
+            }
+        }
+        search: for (String a : A) { // search: 像一个label，指示loop回到这里
+            int[] aCount = count(a);
+            for (int i = 0; i < 26; i++) {
+                if (bmax[i] > aCount[i]) {
+                    continue search;
+                }
+            }
+            ans.add(a);
+        }
+        return ans;
+    }
+    
+    private int[] count(String s) { // helper function, 计算s中每个字母出现次数
+        int[] ans = new int[26]; // 26个字母
+        for (char c : s.toCharArray()) {
+            ans[c - 'a']++; //每个字母对应index的count++
+        }
+        return ans;
+    }
+}
+时间复杂度O(A+B)， 空间复杂度O(lengthA + lengthB）
