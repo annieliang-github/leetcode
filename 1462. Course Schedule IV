@@ -1,0 +1,1 @@
+There are a total of n courses you have to take, labeled from 0 to n-1. To take course 0 you have first to take course 1, which is expressed as a pair: [1,0]. Given the total number of courses n, a list of direct prerequisite pairs and a list of queries pairs. Return a list of boolean, the answers to the given queries.
