@@ -1,0 +1,41 @@
+There are n cities numbered from 0 to n-1. Given the array edges where edges[i] = [fromi, toi, weighti] represents a bidirectional and weighted edge between cities fromi and toi, and given the integer distanceThreshold.
+Return the city with the smallest number of cities that are reachable through some path and whose distance is at most distanceThreshold, If there are multiple such cities, return the city with the greatest number.
+class Solution {
+    public int findTheCity(int n, int[][] edges, int distanceThreshold) {
+        int[][] dist = new int[n][n];
+        for (int i = 0; i < n; i++) { //使用一个大值，对距离数组进行填充
+            Arrays.fill(dist[i], Integer.MAX_VALUE / 2);
+        }
+        for (int i = 0; i < dist.length; i++) {
+            dist[i][i] = 0; //顶点到自身的距离为0
+        }
+        for (int[] edge : edges) { //填充顶点到其他点的距离，因为双向填写两次
+            dist[edge[0]][edge[1]] = edge[2];
+            dist[edge[1]][edge[0]] = edge[2];
+        }
+        
+        for (int k = 0; k < n; k++) { //Floyd算法
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    int len = dis[i][k] + dis[k][j];
+                    if (len < dis[i][j]) dis[i][j] = len;
+                }
+            }
+        }
+        int ans = 0;
+        int minDist = Integer.MAX_VALUE;
+
+        // 找出长度小于distanceThreshold的路径个数最少且最大编号的顶点
+        for (int i = n - 1; i >= 0; i--) { //因为要最大编号，所以从大到小loop
+            int count = 0; // 统计当前城市长度小于distanceThreshold的路径个数
+            for (int j = 0; j < n; j++) {
+                    if (dist[i][j] <= distanceThreshold) count++;
+            }
+            if (count < minDist) {
+                ans = i;
+                minDist = count;
+            }
+        }
+        return ans;
+    }
+}
