@@ -1,0 +1,68 @@
+You are given a network of n nodes, labeled from 1 to n. You are also given times, a list of travel times as directed edges times[i] = (ui, vi, wi), where ui is the source node, vi is the target node, and wi is the time it takes for a signal to travel from source to target.
+We will send a signal from a given node k. Return the time it takes for all the n nodes to receive the signal. If it is impossible for all the n nodes to receive the signal, return -1.
+Input: times = [[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2
+Output: 2
+
+class Solution { //使用Floyd算法，时间复杂度O(n^3)，无法判断负权回路
+    public int networkDelayTime(int[][] times, int n, int k) {
+        int[][] dp = new int[n + 1][n + 1];
+        
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) { //自己到本身的距离为0，初始化
+                    dp[i][j] = i == j ? 0 : Integer.MAX_VALUE / 2; // 防溢出
+            }
+        }
+        for (int[] t : times) {
+            dp[t[0]][t[1]] = t[2]; // t[0]为起点，t[1]为终点
+        }
+        for (int x = 1; x <= n; x++) { // 相当于遍历每一个x（利用x作为中间点）
+            for (int i = 1; i <= n; i++) {
+                for (int j = 1; j <= n; j++) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i][x] + dp[x][j]);
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 1; i <= n; i++) {
+            ans = Math.max(ans, dp[k][i]); // 最长的那个shortest distance是？
+        }
+        return (ans == Integer.MAX_VALUE / 2) ? -1 : ans; //ans为初始值->无path
+    }
+}
+
+743题法2：
+
+Bellman-Ford 算法和 Dijkstra 算法同为解决单源最短路径的算法。Dijkstra 算法要求图 G 中边的权值均为非负，而 Bellman-Ford 算法能适应一般的情况（即存在负权边的情况）。
+
+Bellman-Ford 算法采用DP进行设计，实现的时间复杂度为 O(V*E)，Dijkstra 算法采用Greedy范式进行设计，普通实现的时间复杂度为 O(V2)，若基于 Fibonacci heap 的最小优先队列实现版本则时间复杂度为 O(E + VlogV)。
+
+1, 创建源顶点 v 到图中所有顶点的距离的集合 distSet，为图中的所有顶点指定一个距离值，初始均为 Infinite，源顶点距离为 0；
+2, 计算最短路径，执行 V - 1 次遍历；对于图中的每条边：如果Distant[u] + w(u, v) < Distant[v]，则另Distant[v] = Distant[u]+w(u, v)。若上述操作没有对Distant进行更新，说明最短路径已经查找完毕，或者部分点不可达，跳出循环。
+3, 检测图中是否有负权边形成了环，遍历图中的所有边，计算 u 至 v 的距离，如果对于 v 存在更小的距离 （如果存在Distant[u] + w(u, v) < Distant[v]的边），则说明存在环。
+class Solution {
+    public int networkDelayTime(int[][] times, int n, int k) {
+        //存放 k 到各个点的最短路径，最大的那个最短路径即为结果
+        int[] dist = new int[n];
+        Arrays.fill(dist, -1); //先都用-1填满，意义为无边
+        dist[k - 1] = 0; // 第k个节点到自己的距离为0（注意是以idx1开头）
+        // 进行n-1轮的松弛，因为任意两点间的最短路径最多包含 n-1 条边
+        for (int i = 0; i < n - 1; i++) {
+            for (int[] time : times) {
+                int u = time[0] - 1; //源节点，1 based idx所以要-1
+                int v = time[1] - 1; //目标节点
+                int w = time[2]; // weight
+                if (dist[u] != -1) {
+                    if (dist[v] == -1 || dist[u] + w < dist[v]) {
+                        dist[v] = dist[u] + w; //更新最小距离
+                    }
+                }
+            }
+        }
+        int max = 0;
+        for (int i = 0; i < n; i++) {
+            if (dist[i] == -1) return -1;
+            if (dist[i] > max) max = dist[i];
+        }
+        return max;
+    }
+}
