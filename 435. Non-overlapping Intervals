@@ -1,0 +1,23 @@
+Given a collection of intervals, find the minimum number of intervals you need to remove to make the rest of the intervals non-overlapping.
+class Solution { //greedy解法：
+    public int eraseOverlapIntervals(int[][] intervals) {
+        if (intervals.length == 0) return 0;
+          //重写compareTo 匿名类, 以interval第二个数字为升序排列
+        Arrays.sort(intervals, new Comparator<int[]>() {
+            public int compare(int[] interval1, int[] interval2) {
+                return interval1[1] - interval2[1];
+            }
+        });
+        
+        int n = intervals.length;
+        int right = intervals[0][1]; //先设置right为第一个interval的结尾
+        int ans = 1; //符合条件的interval
+        for (int i = 1; i < n; i++) {
+            if (intervals[i][0] >= right) {
+                ans++; //如果下一个区间的开始大于前一个区间的结束，OK
+                right = intervals[i][1]; //更新right为下一个interval的区间结尾
+            }
+        }
+        return n - ans;
+    }
+}              时间\空间 复杂度：O(nlogn)
