@@ -1,0 +1,17 @@
+An integer array is called arithmetic if it consists of at least three elements and if the difference between any two consecutive elements is the same. Given an integer array nums, return the number of arithmetic subarrays of nums. A subarray is a contiguous subsequence of the array.
+class Solution {
+    public int numberOfArithmeticSlices(int[] nums) {
+        //dp[i] 表示以 A[i] 为结尾的等差递增子区间的个数
+        int[] dp = new int[nums.length]; //和原数组长度一样
+        int sum = 0;
+        for (int i = 2; i < dp.length; i++) {
+            if (nums[i] - nums[i - 1] == nums[i - 1] - nums[i - 2]) {
+              //以nums[i-1]为结尾的递增子区间后面再加上nums[i]
+//可以构成新的递增子区间
+                dp[i] = dp[i - 1] + 1;
+                sum += dp[i];
+            }
+        }
+        return sum;
+    }
+}
