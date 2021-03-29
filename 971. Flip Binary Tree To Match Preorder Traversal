@@ -1,0 +1,27 @@
+You are given the root of a binary tree with n nodes, where each node is uniquely assigned a value from 1 to n. You are also given a sequence of n values voyage, which is the desired pre-order traversal of the binary tree.
+Flip the smallest number of nodes so that the pre-order traversal of the tree matches voyage.
+Return a list of the values of all flipped nodes. If it is impossible to flip the nodes in the tree to make the pre-order traversal match voyage, return the list [-1].
+class Solution {
+    List<Integer> result = new ArrayList<>();
+    int i = 0;  // voyage的index
+    public List<Integer> flipMatchVoyage(TreeNode root, int[] voyage) {
+        if (dfs(root, voyage)) {
+            return result;
+        }
+        return Arrays.asList(-1);
+    }
+    private boolean dfs(TreeNode root, int[] voyage) {
+        if (root == null) return true;
+        // 检查当前节点值（root.val）和voyage数组里面的voyage[i]是否匹配
+        if (root.val != voyage[i++]) return false;
+        // 如果root匹配，继续向下判断
+        // 如果左孩子与voyage[i] 不等，看是否可以swap
+        if (root.left != null && root.left.val != voyage[i]) {
+            result.add(root.val);
+            // 先右再左
+            return dfs(root.right, voyage) && dfs(root.left, voyage);
+        }
+        // 如果右孩子与voyage[i]不相等
+        return dfs(root.left, voyage) && dfs(root.right, voyage);
+    }
+}
