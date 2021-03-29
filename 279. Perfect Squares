@@ -1,0 +1,56 @@
+Given an integer n, return the least number of perfect square numbers that sum to n. 
+
+//dp解法：
+public int numSquares(int n) {
+        int[] dp = new int[n + 1];
+        //因为要计算min，所以先把所有dp都放入最大值
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0; //dp[0]表示 和为0的完全平方数的最小数量，0
+        //依次求出 1, 2... 直到 n 的解
+        for (int i = 1; i <= n; i++) {
+            //依次减去一个平方数
+            for (int j = 1; j * j <= i; j++) {
+                    dp[i] = Math.min(dp[i], dp[i - j * j] + 1);
+            }
+        }
+        return dp[n];
+}                时间复杂度：O(n√n) 空间复杂度：O(n)
+
+//DFS解法：
+private int helper(int n, Map<Integer, Integer> map) {
+        if (map.containsKey(n)) return map.get(n); //Memoization
+        if (n == 0) return 0;
+        int count = Integer.MAX_VALUE;
+        for (int i = 1; i * i <= n; i++) {
+            count = Math.min(count, helper(n - i * i, map) + 1);
+        }
+        map.put(n, count);
+        return count;
+}
+public int numSquares(int n) {
+       return helper(n, new HashMap<Integer, Integer>());
+}
+
+//BFS解法：
+public int numSquares(int n) {
+        Queue<Integer> queue = new LinkedList<>();
+        Set<Integer> visited = new HashSet<>();
+        int level = 0;
+        queue.add(n);
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            level++;
+            for (int i = 0; i < size; i++) {
+                int curr = queue.poll();
+                for (int j = 1; j * j <= curr; j++) {
+                    int next = curr - j * j;
+                    if (next == 0) return level;
+                    if (!visited.contains(next)) {
+                        queue.offer(next);
+                        visited.add(next);
+                    }
+                }
+            }
+        }
+        return -1;
+}
