@@ -1,0 +1,33 @@
+You are given a 2D array of integers envelopes[i] = [wi, hi] represents the width and the height of an envelope. One envelope can fit into another iff both the width and height of one envelope is greater than that of the other envelope. Return the maximum number of envelopes can you Russian doll (i.e., put one inside the other).
+class Solution {
+    public int maxEnvelopes(int[][] envelopes) {
+        if (envelopes.length == 0) return 0;
+        int n = envelopes.length;
+        
+        Arrays.sort(envelopes, new Comparator<int[]>() {
+            public int compare(int[] e1, int[] e2) {
+                // 按宽度e[0]升序排列，若一样则按高度e[1]降序排列
+                // 升序是a-b，降序是b-a
+                if (e1[0] != e2[0]) return e1[0] - e2[0];
+                else return e2[1] - e1[1];
+            }
+        });
+        //上述重写comparator改成lambda：
+        Arrays.sort(envelopes, (o1,o2)->o1[0]!=o2[0]?o1[0]-o2[0]:o2[1]-o1[1]);
+        
+        int[] dp = new int[n]; //dp[i]为idx=i时最长严格递增子序列长度
+        Arrays.fill(dp, 1); //每个数字都是自己的最长递增子序列，初始化成1
+        int ans = 1;
+        for (int i = 1; i < n; i++) { //i靠右
+            for (int j = 0; j < i; j++) { //j靠左
+                if (envelopes[j][1] < envelopes[i][1]) { //只看高度
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
+    }
+}    
+时间复杂度：O(n^2)，排序需要 O(nlog⁡n)，动态规划需要 O(n^2)。空间复杂度：O(n)
+
