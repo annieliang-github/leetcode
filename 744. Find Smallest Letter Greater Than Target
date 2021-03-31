@@ -1,14 +1,40 @@
-class Solution {
+Given a list of sorted characters letters containing only lowercase letters, and given a target letter target, find the smallest element in the list that is larger than the given target. Letters also wrap around. 
+Input: letters = ["c", "f", "j"] target = "a"
+Output: "c"
+
+class Solution { //二分 时间复杂度O(logn)
     public char nextGreatestLetter(char[] letters, char target) {
-        int n = letters.length, left = 0, right = n - 1;
-        if (left <= right) {
+        int n = letters.length, left = 0, right = n;
+        //在每一轮中我们保持循环始终在区间 [left，right]
+        while (left < right) {
             int mid = left + (right - left) / 2;
+            //修改查找区间为 [mid + 1, right]
             if (letters[mid] <= target) left = mid + 1;
-            else right = mid - 1;
+            else right = mid; //修改查找区间为 [left, mid]
         }
-        
-        if (left < n) return letters[left];
-        else return letters[0];
+        //用模运算，如果最后一个位置是index n, 则返回letters[0]
+        return letters[left % n];
     }
 }
 
+class Solution { //扫描 letters 记录字母是否存在，时间复杂度O(N)
+    public char nextGreatestLetter(char[] letters, char target) {
+        boolean[] seen = new boolean[26];
+        for (char c : letters) seen[c - 'a'] = true; //遇到标记为true
+        while (true) {
+            target++; //target+1，查找target后面的字母
+            if (target > 'z') target = 'a'; //wrap around
+            if (seen[target - 'a']) return target; //找到
+        }
+    }
+}
+
+
+class Solution { //线性查找O(n)
+    public char nextGreatestLetter(char[] letters, char target) {
+        for (char c: letters)
+            if (c > target) return c;
+        return letters[0];
+    }
+}
+由于 letters 已经有序，从左往右扫描找到比目标字母大的就是答案。否则(letters 不为空)答案将是 letters[0]
