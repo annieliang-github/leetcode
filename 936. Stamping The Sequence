@@ -1,0 +1,42 @@
+If the initial sequence is "?????", and your stamp is "abc",  then you may make "abc??", "?abc?", "??abc" in the first turn. If the sequence is possible to stamp, then return an array of the index of the left-most letter being stamped at each turn.  If the sequence is not possible to stamp, return an empty array.
+public int[] movesToStamp(String stamp, String target) {
+        List<Integer> ansReverse = new ArrayList<>(); //逆向所以index是反着的
+        int length = target.length();
+        char[] curr = target.toCharArray();
+        char[] starArray = new char[length];
+        Arrays.fill(starArray, '*'); //一开始都是星号
+        while (!Arrays.equals(curr, starArray)) { //如果星号array和target不同
+            int stampIdx = getIndex(curr, stamp);
+            if (stampIdx < 0) return new int[0]; //小于零说明无法stamp
+            else update(curr, stampIdx, stamp);
+            ansReverse.add(stampIdx); //加入index
+        }
+        int[] ans = new int[ansReverse.size()]; //转成array
+        for (int i = 0; i < ans.length; i++) { //改成正序 len-i-1
+            ans[i] = ansReverse.get(ansReverse.size() - i - 1);
+        }
+        return ans;
+}
+
+private int getIndex(char[] curr, String stamp) {
+        for (int i = 0; i < curr.length - stamp.length() + 1; i++) {
+            int j = 0; //j是stamp的pointer
+            int s = i; //s是curr的pointer
+            boolean isNonStar = false;
+            //如果s、j都没有越界且：curr[s]为星星，或者 curr[s]和stamp[j]的字母一样
+            while (j < stamp.length() && s < curr.length && 
+(curr[s] == '*' || curr[s] == stamp.charAt(j))) {
+                if (curr[s] != '*') isNonStar = true; // 如果不是星星
+                s++;
+                j++;
+            }
+            if (j == stamp.length() && isNonStar) return i;
+    }
+        return -1;
+}
+
+private void update(char[] curr, int i, String stamp) {
+        for (int j = 0; j < stamp.length(); j++) {
+            curr[i + j] = '*'; //stamp成星星
+        }
+}
