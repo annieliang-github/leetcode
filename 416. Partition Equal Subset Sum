@@ -1,0 +1,44 @@
+Given a non-empty array nums containing only positive integers, find if the array can be partitioned into two subsets such that the sum of elements in both subsets is equal.
+public boolean canPartition(int[] nums) {
+        int length = nums.length;
+        int sum = 0, maxNum = 0;
+        for (int num : nums) {
+            sum += num;
+            maxNum = Math.max(maxNum, num);
+        }
+        if (sum % 2 != 0) return false;
+        int target = sum / 2;
+        if (maxNum > target) return false;
+        
+        //target + 1多出来的那 1 列，因为背包容量从 0 开始考虑
+        boolean[][] dp = new boolean[length][target + 1];
+        //dp[i][j]表示从数组的[0, i]区间内挑选一些正整数，使得这些数的和恰好等于 j
+        //转移方程：dp[i][j] = dp[i - 1][j] or dp[i - 1][j - nums[i]]
+        
+        // 先填表格第 0 行，at idx 0，这个数只能让自己相等的为true
+        if (nums[0] <= target) dp[0][nums[0]] = true;
+        //使得和为0，可以取0个数，所以为true
+        for (int i = 0; i < length; i++) dp[i][0] = true;
+
+        for (int i = 1; i < length; i++) {
+            int num = nums[i];
+            for (int j = 0; j <= target; j++) {
+                if (j >= num) { //可选nums[i]也可不选，只要有一个为 true即可
+                    dp[i][j] = dp[i - 1][j] || dp[i - 1][j - num];
+                } else { //在选取的数字的和等于 j 的情况下无法选取 nums[i]
+                    dp[i][j] = dp[i - 1][j];
+                }
+            }
+        }
+        return dp[length - 1][target];
+}            
+时间复杂度：O(n×target)，空间复杂度也是，可优化到：O(target)
+
+boolean[] dp = new boolean[W + 1];
+dp[0] = true;
+for (int num : nums) {                 
+for (int i = W; i >= num; i--) {   // 从后往前，先计算 dp[i] 再计算 dp[i-num]
+            dp[i] = dp[i] || dp[i - num];
+}
+}
+return dp[W];
