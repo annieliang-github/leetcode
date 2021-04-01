@@ -1,0 +1,87 @@
+You are given an n x n matrix isConnected. A province is a group of directly or indirectly connected cities and no other cities outside of the group. Return the total number of provinces.
+
+//DFS解法：时间复杂度O(n^2)，遍历矩阵所需时间。空间复杂度O(n)
+    public int findCircleNum(int[][] isConnected) {
+        int length = isConnected.length; //length为无向图的顶点数量
+        boolean[] visited = new boolean[length];
+        int provinces = 0; //累计遍历过的连通域的数量
+        for (int i = 0; i < length; i++) {
+            if (!visited[i]) { //如果i城市未被访问过，从该城市开始dfs
+                dfs(isConnected, visited, length, i);
+                provinces++;
+            }
+        }
+        return provinces;
+    }
+        private void dfs(int[][] isConnected, boolean[] visited, int length, int i) {
+        visited[i] = true; // 对当前顶点 i 进行访问标记
+        for (int j = 0; j < length; j++) {
+            if (isConnected[i][j] == 1 && !visited[j]) {
+                // 继续遍历与顶点 i 相邻的顶点
+                dfs(isConnected, visited, length, j);
+            }
+        }
+    }
+
+//BFS解法：时间复杂度O(n^2)，遍历矩阵所需时间。空间复杂度O(n)
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < length; i++) {
+            // 若i未被访问，说明又是一个新的连通域，则bfs新的连通域且计数+=1.
+            if (!visited[i]) {
+                provinces++;
+                queue.offer(i);
+                while (!queue.isEmpty()) {
+                    int j = queue.poll();
+                    visited[j] = true; //要将poll出来的这个记录为以访问
+                    for (int k = 0; k < length; k++) {
+                        if (isConnected[j][k] == 1 && !visited[k]) {
+                                queue.offer(k);
+                        }
+                    }
+                }
+        }
+        }
+        return provinces;
+//并查集解法：
+
+class Solution {
+    public int findCircleNum(int[][] isConnected) {
+        int n = isConnected.length;
+          UnionFind uf = new UnionFind(n); // 初始化并查集
+        // 遍历每个顶点，将当前顶点与其邻接点进行合并
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (isConnected[i][j] == 1) {
+                    uf.union(i, j); //如果两个点可连接，union在一起
+                }
+            }
+        }
+         return uf.size; // 返回最终合并后的集合的数量
+    }
+}
+
+class UnionFind {
+    int[] roots;
+    int size; // 集合数量 
+    public UnionFind(int n) { //顶点数为 n
+        roots = new int[n];
+        for (int i = 0; i < n; i++) {
+            roots[i] = i; //初始化n个单顶点集合，每个集合指向自身
+        }
+        size = n;
+    }
+    public int find(int i) {
+            if (i == roots[i]) return i; //假如这个数就是root，返回
+            return roots[i] = find(roots[i]); // 否则recurse，继续找知道找到root
+        }
+    public void union(int p, int q) {
+        int pRoot = find(p);
+        int qRoot = find(q);
+        if (pRoot != qRoot) { //假如pq不是同一个root，合并，并把size-1
+            roots[pRoot] = qRoot; //怎么合并都行
+            size--;
+        }
+    }
+}
+
+时间复杂度是 O(n^2α(n))
