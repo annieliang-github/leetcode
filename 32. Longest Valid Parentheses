@@ -1,0 +1,76 @@
+Given a string containing just the characters '(' and ')', find the length of the longest valid (well-formed) parentheses substring.
+
+
+
+(
+)
+(
+(
+)
+)
+)
+(
+)
+)
+(
+)
+-1
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+
+
+先放入-1，当遍历到索引 5 的右括号，此时栈顶为 2，出栈，栈顶变为 -1，有效长度为 5 - (-1) = 6。当遍历到索引 6 的右括号，让 -1 出栈。此时栈空了，让索引 6 入栈当 “参照物”。
+
+两种索引会入栈：1.等待被匹配的左括号索引。2.充当「参照物」的右括号索引。
+
+//Stack法：时间复杂度 空间复杂度 都是 O(n)
+    public int longestValidParentheses(String s) {
+        int max = 0;
+        Stack<Integer> stack = new Stack<>();
+        stack.push(-1); //在栈中预置 -1 作为一个“参照物”
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '(') stack.push(i); //左括号，入栈
+            else {
+                stack.pop();
+                if (stack.isEmpty()) stack.push(i);
+                else max = Math.max(max, i - stack.peek()); //i减栈顶元素
+            }
+        }
+        return max;
+    }
+public int longestValidParentheses(String s) { //DP解法：
+        if (s == null || s.length() < 2) return 0;
+        int n = s.length(), max = 0;
+        int[] dp = new int[n]; //dp[i]:以i处括号结尾的有效括号长度
+        // dp[0] = 0; 单个括号无法形成配对，默认为0
+        for (int i = 1; i < n; i++) {
+            if (s.charAt(i) == ')') { //遇见右括号才开始判断
+                if (s.charAt(i - 1) == '(') { //上一个是左括号
+                    if(i < 2) dp[i] = 2; //开头处
+                    else dp[i] = dp[i - 2] + 2;
+                } else { //上一个是右括号
+                    if (dp[i - 1] > 0) {//上一个括号是有效括号
+                        //pre_left为i处右括号对应左括号下标                                    int pre_left = i - dp[i - 1] - 1;
+                        if (pre_left >= 0 && s.charAt(pre_left) == '(') {                                            dp[i] = dp[i - 1] + 2;
+                            //左括号前还可能存在有效括号
+                            if (pre_left - 1 > 0) {
+                                dp[i] = dp[i] + dp[pre_left - 1];
+                            }
+                        }
+                    }
+                }
+            }
+            max = Math.max(max, dp[i]);
+        }
+        return max;
+}
