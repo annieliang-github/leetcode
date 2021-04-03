@@ -1,0 +1,39 @@
+In a town, there are N people labelled from 1 to N.  There is a rumor that one of these people is secretly the town judge.
+If the town judge exists, then:
+The town judge trusts nobody.
+Everybody (except for the town judge) trusts the town judge.
+There is exactly one person that satisfies properties 1 and 2.
+You are given trust, an array of pairs trust[i] = [a, b] representing that the person labelled a trusts the person labelled b. If the town judge exists and can be identified, return the label of the town judge.  Otherwise, return -1.
+public int findJudge(int N, int[][] trust) { 时间复杂度O(max([][]行数,N)) 空间O(N)
+        if (N == 1) return 1;
+        int ans = -1;
+        int[] inDegree = new int[N]; //0下标存的是1号人的入度
+        int[] outDegree = new int[N]; //0下标存的是1号人的出度
+        for (int i = 0; i < trust.length; i++) {
+            int from = trust[i][0];
+            int to = trust[i][1];
+            outDegree[from - 1]++;
+            inDegree[to - 1]++;
+        }
+        for (int i = 0; i < N; i++) {
+            //法官入度N-1，自己不相信任何人（出度为0）
+            if (outDegree[i] == 0 && inDegree[i] == N - 1) {
+                ans = i + 1;
+                break;
+            }
+        }
+        return ans;
+}
+
+两个数组多余了，优化：
+        for (int[] relation : trust) {
+            degree[relation[1] - 1]++;          // 获得投票
+            degree[relation[0] - 1]--;          // 投出一票
+        }
+        int judge = -1;
+        for (int i = 0; i < N; i++) {
+            if (degree[i] == N - 1) { // 法官没给别人投过票    
+                judge = i;
+                break;
+            }
+        }
