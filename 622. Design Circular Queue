@@ -1,0 +1,44 @@
+Design your implementation of the circular queue. The circular queue is a linear data structure in which the operations are performed based on FIFO principle and the last position is connected back to the first position to make a circle. 
+class MyCircularQueue {
+    int[] queue;
+       int size;//对列的容量
+       int front;//头指针
+       int rear;//尾指针
+       int E_num;//当前队列中元素的个数
+       public MyCircularQueue(int k) {//初始化
+           this.queue=new int[k];
+           this.size=k;
+           this.front=-1;
+           this.rear=0;
+           this.E_num=0;
+       }
+       public boolean enQueue(int value) {//入队
+           if(E_num>=size) return false;
+           front=(front+1)%size;
+           queue[front]=value;
+           E_num++;
+           return true;
+       }
+       public boolean deQueue() {//出队
+            if(E_num==0) return false;
+            rear=(rear+1)%size;
+            E_num--;
+            return true;
+       }
+       public int Front() {//获取队头元素（当前所有元素中最先进入的元素）
+            if(E_num==0) return -1;
+            return queue[rear];
+       }
+       public int Rear() {//获取队尾元素（当前所有元素中最后入队的元素）
+            if(E_num==0) return -1;
+            return queue[front];
+       }
+       public boolean isEmpty() {//判断队空
+            if(E_num==0) return true;
+            return false;
+       }
+       public boolean isFull() {//判断队是否已满
+            if(E_num==size) return true;
+            return false;
+       }
+}
