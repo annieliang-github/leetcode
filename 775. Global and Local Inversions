@@ -1,0 +1,27 @@
+We have some permutation A of [0, 1, ..., N - 1], where N is the length of A. The number of (global) inversions is the number of i < j with 0 <= i < j < N and A[i] > A[j]. The number of local inversions is the number of i with 0 <= i < N and A[i] > A[i+1].
+Return true if and only if the number of global inversions is equal to the number of local inversions.
+global inversion包括了local inversion，所以看是否数目相同，只要找到一个global inversion that's 2 index away就可以。比如1、2、0，其中1和0就是global，false
+
+class Solution { //时间复杂度O(n)
+    public boolean isIdealPermutation(int[] A) {
+        int max = -1;
+        for (int i = 0; i < A.length - 2; i++) {
+            max = Math.max(max, A[i]);
+            if (max > A[i + 2]) return false;
+        }
+        return true;
+    }
+}
+
+一个局部倒置对应一个全局倒置，也就是说只能产生局部倒置，所以当一个数偏离对应下标位置超过1就会多产生全局倒置不符合要求
+
+class Solution {
+    public boolean isIdealPermutation(int[] A) {
+        for(int i = 0; i < A.length;i++){
+            if(Math.abs(A[i] - i) > 1){
+                    return false;
+            }
+        }
+        return true;
+    }
+}
