@@ -1,0 +1,21 @@
+
+Given an array of distinct integers nums and a target integer target, return the number of possible combinations that add up to target. 
+
+class Solution {
+    public int combinationSum4(int[] nums, int target) {
+        if (nums == null || nums.length == 0) return 0;
+        int[] dp = new int[target + 1]; //dp[i]: 凑成目标正整数为i的排列个数
+        dp[0] = 1; //初始化为1（其实没什么意义）
+        //递推公式一般都是dp[i] += dp[i - nums[j]]
+        for (int i = 1; i <= target; i++) {
+            for (int j = 0; j < nums.length; j++) {
+                if(i >= nums[j]) {
+                    dp[i] += dp[i - nums[j]];
+                }
+            }
+        }
+        return dp[target];
+        
+    }
+}
+
