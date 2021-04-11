@@ -1,0 +1,40 @@
+Given an m x n integers matrix, return the length of the longest increasing path in matrix. From each cell, you can either move in four directions: left, right, up, or down. You may not move diagonally or move outside the boundary.
+当访问到一个单元格 (i,j) 时，如果 memo[i][j]≠0, 说明该单元格的结果已经计算过。反之，说明该单元格的结果尚未被计算过，则进行搜索，并将计算得到的结果存入缓存中。      时间复杂度、空间复杂度：O(mn)
+
+public int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+public int rows, cols;
+public int longestIncreasingPath(int[][] matrix) {
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) return 0;
+        rows = matrix.length;
+        cols = matrix[0].length;
+        int[][] memo = new int[rows][cols];
+        int ans = 0;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                //求最长递增路径的长度，所以取max
+                ans = Math.max(ans, dfs(matrix, i, j, memo));
+            }
+        }
+        return ans;
+}
+private int dfs(int[][] matrix, int row, int col, int[][] memo) {
+        int up = 0, down = 0, left = 0, right = 0;
+        if (memo[row][col] != 0) return memo[row][col]; //如果该点已经计算过，返回
+        if (row - 1 >= 0 && matrix[row][col] < matrix[row - 1][col]) { //上
+            up = dfs(matrix, row - 1, col, memo);
+            memo[row - 1][col] = up; 
+        }
+        if (row + 1 < rows && matrix[row][col] < matrix[row + 1][col]) { //下
+            down = dfs(matrix, row + 1, col, memo);
+            memo[row + 1][col] = down;
+        }
+        if (col - 1 >= 0 && matrix[row][col] < matrix[row][col - 1]) { //左
+            left = dfs(matrix, row, col - 1, memo);
+            memo[row][col - 1] = left; 
+        }
+        if (col + 1 < cols && matrix[row][col] < matrix[row][col + 1]) { //右
+            right = dfs(matrix, row, col + 1, memo);
+            memo[row][col + 1] = right; 
+        }
+        return Math.max(Math.max(up, down), Math.max(left, right)) + 1; //返回最大值+1
+}
