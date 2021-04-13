@@ -1,0 +1,19 @@
+Given the root of a binary tree, return the lowest common ancestor of its deepest leaves. 时间复杂度O(n)，空间复杂度O(n)，其中n为树的大小
+class Solution {
+    public TreeNode lcaDeepestLeaves(TreeNode root) {
+        if (root == null) return root;
+        // 获取当前节点的左右子树的最大深度
+        int leftMaxDepth = getMaxDepth(root.left);
+        int rightMaxDepth = getMaxDepth(root.right);
+        // 如果两边最大深度相同，则这个节点就是结果
+        if (leftMaxDepth == rightMaxDepth) return root;
+        if (leftMaxDepth > rightMaxDepth)
+            return lcaDeepestLeaves(root.left);
+        return lcaDeepestLeaves(root.right);
+    }
+    private int getMaxDepth(TreeNode root) {
+        if (root == null) return 0;
+        //如果node的depth是 d, 孩子的depth就是 d + 1
+        return Math.max(getMaxDepth(root.left), getMaxDepth(root.right)) + 1;
+    }
+}
