@@ -1,0 +1,22 @@
+class Solution {
+    public TreeNode ans;
+    public int maxDepth = -1; //当前遍历到的节点中的最大深度，初始值设为-1
+    public TreeNode subtreeWithAllDeepest(TreeNode root) {
+        dfs(root, 0); //后续遍历，root深度为0
+        return ans;
+    }
+    
+    private int dfs(TreeNode root, int currDepth) {
+        if (root == null) return currDepth;
+        //遍历并求：当前节点的左/右子树中所有节点最大深度
+        int leftMax = dfs(root.left, currDepth + 1);
+        int rightMax = dfs(root.right, currDepth + 1);
+        //以当前节点为根的树中所有节点中的最大深度(它将作为返回值)
+        currDepth = Math.max(leftMax, rightMax);
+        if (leftMax == rightMax && currDepth >= maxDepth) {
+            ans = root; //暂时将ans更新为当前节点
+            maxDepth = currDepth; //更新最大深度
+        }
+        return currDepth;
+    }
+}
