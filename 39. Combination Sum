@@ -1,0 +1,28 @@
+Given an array of distinct integers candidates and a target integer target, return a list of all unique combinations of candidates where the chosen numbers sum to target. You may return the combinations in any order.
+
+The same number may be chosen from candidates an unlimited number of times. Two combinations are unique if the frequency of at least one of the chosen numbers is different.
+
+时间复杂度：由于每个数字的使用次数不确定，因此无法分析具体的复杂度。但是 DFS 回溯算法通常是指数级别的复杂度（因此数据范围通常为 30 以内）。这里暂定 O(n * 2^n)
+
+List<List<Integer>> lists = new ArrayList<>();
+public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        if (candidates == null || candidates.length == 0 || target < 0) return lists;
+        Arrays.sort(candidates); // 排序后，如果target>=candidates[i]，可不继续loop
+        List<Integer> list = new ArrayList<>();
+        dfs(0, target, list, candidates); //0为starting index
+        return lists;
+}
+    
+//每次递归都是从 0 开始，所有数字都遍历一遍，会出现重复的组合，所以加start
+private void dfs(int start, int target, List<Integer> list, int[] candidates) {
+        if (target < 0) return; //递归终止
+        if (target == 0) lists.add(new ArrayList<>(list)); //reference type，需要new
+        else {
+            // 比较朴素的做法是前面不排序，这里也不用比较target，但速度慢
+            for (int i=start; i<candidates.length && target >= candidates[i]; i++) {
+                list.add(candidates[i]);
+                dfs(i, target - candidates[i], list, candidates); //update
+                list.remove(list.size() - 1); //回溯，把刚刚加进去的最后一个去掉
+            }
+        }
+}
