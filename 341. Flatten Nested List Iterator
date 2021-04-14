@@ -1,0 +1,40 @@
+You are given a nested list of integers nestedList. Each element is either an integer or a list whose elements may also be integers or other lists. 
+Implement the NestedIterator class:
+NestedIterator(List<NestedInteger> nestedList) Initializes the iterator with the nested list nestedList.
+int next() Returns the next integer in the nested list.
+boolean hasNext() Returns true if there are still some integers in the nested list and false otherwise.
+Input: nestedList = [[1,1],2,[1,1]]
+Output: [1,1,2,1,1]
+
+由于所有的元素都是在初始化时提供的，因此一个朴素的做法是在初始化的时候进行处理。
+由于存在嵌套，比较简单的做法是通过 DFS 进行处理，将元素都放至队列。
+
+public class NestedIterator implements Iterator<Integer> {
+    private Queue<Integer> queue = new LinkedList<>();
+    
+    public NestedIterator(List<NestedInteger> nestedList) {
+            dfs(nestedList);
+    }
+
+    @Override
+    public Integer next() {
+            return hasNext() ? queue.poll() : -1;
+    }
+
+    @Override
+    public boolean hasNext() {
+            return !queue.isEmpty();
+    }
+    
+    private void dfs(List<NestedInteger> list) {
+        for (NestedInteger item : list) {
+            if (item.isInteger()) {
+                queue.offer(item.getInteger());
+            } else {
+                dfs(item.getList());
+            }
+        }
+    }
+}
+时间复杂度：构建迭代器的复杂度为 O(n)，调用 next() 与 hasNext() 的复杂度为 O(1)
+空间复杂度：O(n)
