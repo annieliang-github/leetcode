@@ -1,0 +1,41 @@
+Given a collection of candidate numbers (candidates) and a target number (target), find all unique combinations in candidates where the candidate numbers sum to target.
+Each number in candidates may only be used once in the combination. 
+这道题与上一问的区别在于：
+    第 39 题：candidates 中的数字可以无限制重复被选取；
+    第 40 题：candidates 中的每个数字在每个组合中只能使用一次。
+
+public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        int length = candidates.length;
+        List<List<Integer>> ans = new ArrayList<>();
+        if (length == 0) return ans;
+        Arrays.sort(candidates);
+        Deque<Integer> path = new ArrayDeque<>(length); //可以有add和remove Last
+        dfs(candidates, 0, target, path, ans);
+        return ans;
+}
+
+//target是剩余的数，一开始是target逐渐往下减，path是根结点到叶子结点的路径
+private void dfs(int[] candidates, int begin, int target, Deque<Integer> path, List<List<Integer>> ans) {
+        if (target == 0) {
+            ans.add(new ArrayList<>(path));
+            return;
+        }
+        int length = candidates.length;
+        for (int i = begin; i < length; i++) {
+          //大剪枝：已经sort过，若减candidates[i]<0，后面的必定也<0，直接break
+            if (target - candidates[i] < 0) break;
+
+          // 小剪枝：同一层相同数值的结点，从第 2 个开始，候选数更少
+//结果一定发生重复，跳过
+            if (i > begin && candidates[i] == candidates[i - 1]) continue;
+            path.addLast(candidates[i]);
+            
+            // 因为元素不可以重复使用，这里递归传递下去的是 i + 1
+            dfs(candidates, i + 1, target - candidates[i], path, ans);
+            
+            path.removeLast(); //回溯
+        }
+}
+
+时间复杂度：O(2^n * n), n 是数组 candidatess 的长度。
+空间复杂度：O(n)。除了存储答案的数组外，我们需要 O(n) 的空间存储列表 、递归中存储当前选择的数的列表、以及递归需要的栈。
