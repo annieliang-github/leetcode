@@ -1,0 +1,34 @@
+Given a set of non-overlapping intervals, insert a new interval into the intervals (merge if necessary). You may assume that the intervals were initially sorted according to their start times.
+Input: intervals = [[1,3],[6,9]], newInterval = [2,5]
+Output: [[1,5],[6,9]]
+
+不重叠的绿区间，在蓝区间的左边：绿区间的右端，位于蓝区间的左端的左边 
+有重叠的绿区间：绿区间的左端 <= 蓝区间的右端，极端的例子就是[8,10]。
+不重叠的绿区间，在蓝区间的右边：绿区间的左端，落在蓝区间的屁股的后面
+
+
+
+和蓝有重叠的区间，会合并成一个区间：左端取2个的较小者，右端2个的较大者，不断更新蓝区间。循环结束时，将合并后的新区间推入 res 数组。剩下的，都在蓝区间右边，不用额外判断。
+
+public int[][] insert(int[][] intervals, int[] newInterval) {
+        int[][] res = new int[intervals.length + 1][2];
+        int length = intervals.length;
+        int idx = 0; // 新array res的pointer
+        int i = 0; // 原array intervals 的 pointer
+
+        // 判断在newInterval左边
+        while (i < length && intervals[i][1] < newInterval[0]) { //r1 < l2
+            res[idx++] = intervals[i++];
+        }
+        while (i < length && intervals[i][0] <= newInterval[1]) { //l1 <= r2
+            newInterval[0] = Math.min(intervals[i][0], newInterval[0]);
+            newInterval[1] = Math.max(intervals[i][1], newInterval[1]);
+            i++;
+        }
+        res[idx++] = newInterval; //把更新后的newInterval加入
+        while (i < length) { //剩下的都在右边，不用再判断了
+            res[idx++] = intervals[i++];
+        }
+        return Arrays.copyOf(res, idx);
+}
+时间复杂度O(n)，空间复杂度O(1)
