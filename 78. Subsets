@@ -1,0 +1,44 @@
+Given an integer array nums of unique elements, return all possible subsets. The solution set must not contain duplicate subsets. Return the solution in any order.
+
+法1：逐个枚举，空集的幂集只有空集，每增加一个元素，让之前幂集中的每个集合，追加这个元素，就是新增的子集:
+
+【1,2,3】-> 第一次【】，第二次n=1，【1】，此时size为2，第三次n=2,【2】、【1,2】...
+public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> ans = new ArrayList<List<Integer>>();
+        ans.add(new ArrayList<Integer>()); //放入空集
+        for (int n : nums) {
+            int size = ans.size(); //因为从空集开始，所以ans里的index比nums多1
+            for (int i = 0; i < size; i++) {
+                List<Integer> newSub = new ArrayList<>(ans.get(i));
+                newSub.add(n);
+                ans.add(newSub);
+            }
+        }
+        return ans;
+}
+
+class Solution { 法2：递归
+    List<Integer> t = new ArrayList<Integer>(); //用 t 数组存放已经被选出的数字
+    List<List<Integer>> ans = new ArrayList<List<Integer>>();
+    public List<List<Integer>> subsets(int[] nums) {
+        dfs(0, nums);
+        return ans;
+    }
+    private void dfs(int curr, int[] nums) { //当前位置index是curr
+        if (curr == nums.length) {
+            ans.add(new ArrayList<Integer>(t));
+            return;
+        }
+        //需要考虑 nums[curr] 取或者不取，如果取，把 nums[curr] 放入t
+        //再向下递归，执行结束后需要对 t 进行回溯，就是把刚加上的最后一个减去
+        t.add(nums[curr]);
+        dfs(curr + 1, nums);
+        t.remove(t.size() - 1);
+        
+        //如果不取，直接执行 dfs，直到curr和nums.len相等（因为包括空集）
+        dfs(curr + 1, nums);
+    }
+}
+
+时间复杂度：O(n 2^n)。一共 2^n 个状态，每种状态需要 O(n) 的时间来构造子集。
+空间复杂度：O(n)。临时数组 t 的空间代价是 O(n)，递归时栈空间的代价为 O(n)。
