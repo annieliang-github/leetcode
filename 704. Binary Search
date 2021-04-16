@@ -1,0 +1,20 @@
+binary search
+
+
+class Solution {
+    public int search(int[] nums, int target) {
+        int left = 0, right = nums.length - 1;
+        
+        while (left <= right) {
+            int mid = left + (right - left) / 2; // 在while里面写mid
+            if (nums[mid] == target) {
+                return mid;
+            } else if (nums[mid] > target) { //比目标大，向左递归，缩小右边
+                right = mid - 1;
+            } else { //比目标小，向右递归，加大左边
+                left = mid + 1; 
+            }
+        }
+        return -1;
+    }
+}
