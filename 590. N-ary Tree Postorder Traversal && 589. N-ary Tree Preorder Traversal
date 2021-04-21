@@ -1,0 +1,37 @@
+Given the root of an n-ary tree, return the postorder traversal of its nodes' values.
+Nary-Tree input serialization is represented in their level order traversal. Each group of children is separated by the null value (See examples)
+Input: root = [1,null,3,2,4,null,5,6]
+Output: [5,6,3,2,4,1]
+
+
+我们需要的遍历顺序为：左->右->根。
+
+如果对层序遍历进行改造，pop栈的top，然后再将子结点从左到右入列，很容易发现，这是一种根->右->左的前序遍历。把根->右->左得到的顺序颠倒，就是答案左->右->根，即后序遍历。颠倒的方式很简单，就是每次都把值添加到结果List的开头即可。
+
+public List<Integer> postorder(Node root) {
+        List<Integer> list = new LinkedList<>(); //建链表，因为可以前插后插之分
+        Stack<Node> stack = new Stack<>();
+        if (root == null) return list;
+        stack.push(root);
+        while (!stack.isEmpty()) {
+            Node node = stack.pop(); //当前栈顶节点出栈
+            list.add(0, node.val); //将值加入列表头部
+            int size = node.children.size();
+            for (Node child : node.children) {
+                    if (child != null) stack.push(child);
+            } 
+        }
+        return list; //也可正常添加入list，先用Collections.reverse()翻转，然后返回list
+}
+
+preOrder其他地方不动，但是放入孩子的时候从右往左：
+int size = node.children.size();
+for (int i = size - 1; i >= 0; i--) stack.push(node.children.get(i)); 
+
+使用recursion:
+
+        if (root == null) return list;
+        list.add(root.val);
+        for (Node node : root.children) preorder(node);
+        return list;
+时间复杂度O(n)，空间复杂度O(n)
