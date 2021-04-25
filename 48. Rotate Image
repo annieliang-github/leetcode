@@ -1,0 +1,44 @@
+You are given an n x n 2D matrix representing an image, rotate the image by 90 degrees (clockwise). You have to rotate the image in-place. 
+
+
+
+
+
+
+
+
+
+方法一：水平翻转再主对角线翻转：时间复杂度O(n^2), 空间复杂度O(1)
+matrix[i][j]​水平轴翻转变成matrix[n−i−1][j]再主对角线翻转变成​matrix[j][n−i−1]​
+
+public void rotate(int[][] matrix) {
+        int n = matrix.length;
+        for (int i = 0; i < n / 2; i++) { //水平翻转, 第一行到最后一行
+            for (int j = 0; j < n; j++) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[n - i - 1][j]; //纵坐标不变
+                matrix[n - i - 1][j] = temp;
+            }
+        }
+          for (int i = 0; i < n; i++) { //沿着左上到右下对角线，[i][j]与[j][i]翻转
+            for (int j = 0; j < i; j++) { //注意 j < i
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[j][i];
+                matrix[j][i] = temp;
+            }
+        }
+}
+
+方法二：经过四轮循环，每次[a][b]把后面的改为[n-b-1]并放前面，前面的[a]换到后面
+public void rotate(int[][] matrix) {
+        int n = matrix.length;
+        for (int i = 0; i < n / 2; ++i) {
+            for (int j = 0; j < (n + 1) / 2; ++j) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[n - j - 1][i];
+                matrix[n - j - 1][i] = matrix[n - i - 1][n - j - 1];
+                matrix[n - i - 1][n - j - 1] = matrix[j][n - i - 1];
+                matrix[j][n - i - 1] = temp; //转回为[i][j]也就是temp
+            }
+        }
+}
