@@ -21,3 +21,22 @@ Explanation: Starting at building 0, you can follow these steps:
 - Go to building 3 without using ladders nor bricks since 7 >= 6.
 - Go to building 4 using your only ladder. You must use either bricks or ladders because 6 < 9.
 It is impossible to go beyond building 4 because you do not have any more bricks or ladders.
+class Solution {
+    public int furthestBuilding(int[] heights, int bricks, int ladders) {
+        int n = heights.length, sum = 0;
+        Queue<Integer> queue = new PriorityQueue<>();
+        for (int i = 1; i < n; i++) {
+            int diff = heights[i] - heights[i - 1];
+            if (diff > 0) {
+                queue.offer(diff);
+                if (queue.size() > ladders) {
+                    sum += queue.poll();
+                }
+                if (sum > bricks) return i - 1;
+            }
+        }
+        return n - 1;
+    }
+}
+
+
