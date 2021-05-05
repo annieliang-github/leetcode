@@ -1,0 +1,43 @@
+Given a sorted integer array arr, two integers k and x, return the k closest integers to x in the array. The result should also be sorted in ascending order.
+An integer a is closer to x than an integer b if:
+|a - x| < |b - x|, or |a - x| == |b - x| and a < b
+
+方法一：将数组中的元素按照与目标 x 的差的绝对值排序，排好序后前 k 个元素即为答案。
+
+public List<Integer> findClosestElements(int[] arr, int k, int x) {
+        List<Integer> ret = Arrays.stream(arr).boxed().collect(Collectors.toList());
+        Collections.sort(ret, (a,b) -> a == b ? a-b : Math.abs(a-x) - Math.abs(b-x));
+        ret = ret.subList(0, k);
+        Collections.sort(ret);
+        return ret;
+}
+
+时间复杂度： O(nlog⁡n)。 Collections.sort() 使用二叉排序
+空间复杂度： O(k)。就地排序不需要额外的空间。但是生成长度为 k 的子列表需要消耗空间。
+
+方法二：要取k个数字在数组中，左边界最左边可以取到：0，最右可以取到：数组长度-k；如果k与数组长度相等，左边界此时取到最小值0; 如果x大于数组最后一个数字，全部从右侧取，左边界取到：数组长度-k
+
+public List<Integer> findClosestElements(int[] arr, int k, int x) {
+
+         int left = 0, right = arr.length - k;
+        
+        while (left < right) { //注意：没有等号，如果有等号会陷入死循环
+            int mid = left + (right - left) / 2;
+            
+            //左边界点mid，它的右边界点为mid+k
+            //比较这两个区间，实质就是比较arr[mid]和arr[mid+k]
+            //因为这两个区间就这两个元素不一样，其余的是重合的
+            
+            if (x-arr[mid] > arr[mid+k]-x) left=mid+1; // 左边离目标值远，向右寻找
+            else right = mid; //我们并不能确定mid位置到底是不是最佳的位置
+        }
+        
+        List<Integer> ans = new ArrayList<>();
+        for (int i = 0; i < k; i++) {
+            ans.add(arr[i + left]);
+        }
+        return ans;
+}
+
+时间复杂度： O(log⁡n+k)。O(log⁡n)是二分查找的时间，O(k)是压缩剩 k 个元素的时间。
+空间复杂度： O(k)。产生结果数组所需要的空间。
