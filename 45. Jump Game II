@@ -1,0 +1,42 @@
+Given an array of non-negative integers nums, you are initially positioned at the first index of the array. Each element in the array represents your maximum jump length at that position. Your goal is to reach the last index in the minimum number of jumps. You can assume that you can always reach the last index.
+Input: nums = [2,3,1,1,4] Output: 2
+解法一：dp，时间复杂度O(n^2), 空间复杂度O(n)
+
+public int jump(int[] nums) {
+        if (nums.length < 2) return 0;
+        int length = nums.length;
+        int[] dp = new int[length]; //dp[i]为走到当前位置所用的最少步数
+        
+        Arrays.fill(dp, Integer.MAX_VALUE); //将数组全部初始化为java中的最大值
+        dp[0] = 0;
+        for (int i = 0; i < length; i++) {
+            int maxStep = nums[i];
+            for (int j = 1; j <= maxStep; j++) { //从i位置出发，最远走到(i+j)
+                if ((i + j) >= length) break; //是否越界
+                dp[i + j] = Math.min(dp[i + j], dp[i] + 1);
+            }
+        }
+        return dp[length - 1];
+}
+
+解法二：贪心 时间复杂度O(n)，空间复杂度O(1)
+
+移动下标只要遇到当前覆盖最远距离的下标，直接步数加一，不考虑是不是终点的情况。
+当 i 指向nums.size - 2时：
+if i = maxDist， 需要再走一步（即ans++），因为最后一步一定是可以到的终点。    
+if i != maxDist，说明当前覆盖最远距离就可以直接达到终点了，不需要再走一步。
+
+public int jump(int[] nums) {
+        int currDist = 0; //当前覆盖的最远距离下标
+        int ans = 0; // number of jumps
+        int nextDist = 0; // 下一步覆盖的最远距离下标
+        
+        for (int i = 0; i < nums.length - 1; i++) { //要到length - 2的位置
+            nextDist = Math.max(nums[i] + i, nextDist);
+            if (i == currDist) { //遇到边界，就更新边界，并且步数+1
+                currDist = nextDist;
+                ans++;
+            }
+        }
+        return ans;
+}
