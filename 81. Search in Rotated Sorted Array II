@@ -1,0 +1,32 @@
+There is an integer array nums sorted in non-decreasing order (not necessarily with distinct values).
+Before being passed to your function, nums is rotated at an unknown pivot index k (0 <= k < nums.length) such that the resulting array is [nums[k], nums[k+1], ..., nums[n-1], nums[0], nums[1], ..., nums[k-1]] (0-indexed). For example, [0,1,2,4,4,4,5,6,6,7] might be rotated at pivot index 5 and become [4,5,6,6,7,0,1,2,4,4].
+Given the array nums after the rotation and an integer target, return true if target is in nums, or false if it is not in nums.
+Input: nums = [2,5,6,0,0,1,2], target = 0
+Output: true
+
+对于数组中有重复元素的情况，二分查找时可能会有 a[l]=a[mid]=a[r]，此时无法判断区间 [l,mid] 和区间 [mid+1,r] 哪个是有序的。
+
+例如 nums=[3,1,2,3,3,3,3] target=2，首次二分时无法判断区间 [0,3] 和区间 [4,6] 哪个是有序的。对于这种情况，我们只能将当前二分区间的左边界加一，右边界减一，然后在新区间上继续二分查找。
+
+public boolean search(int[] nums, int target) {
+        if (nums == null || nums.length == 0) return false;
+        int left = 0, right = nums.length - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] == target||nums[left] == target||nums[right] == target) 
+return true;
+            //右侧有序区间，二分，left = mid + 1
+            else if (nums[mid] < target && target < nums[right]) left = mid + 1;
+            //左侧有序区间，二分，right = mid - 1
+            else if (nums[left] < target && target < nums[mid]) right = mid - 1;
+            else { //仍在中间无序部分，左边界加1，右边界-1
+                left++;
+                right--;
+            }
+        }
+        return false;
+}
+
+时间复杂度：O(n)，最坏情况下数组元素均相等且不为 target，需访问所有位置才能得出结果。
+
+空间复杂度：O(1)。
