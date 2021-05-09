@@ -1,0 +1,39 @@
+A peak element is an element that is strictly greater than its neighbors. Given an integer array nums, find a peak element, and return its index. If the array contains multiple peaks, return the index to any of the peaks.
+You may imagine that nums[-1] = nums[n] = -∞. 
+
+因为 nums[-1] 看做负无穷，所以从第 0 个元素开始，它一定是上升的趋势，由于我们要找峰顶，所以当它第一次出现下降，下降前的值就是我们要找的了。如果它一直上升到最后一个值，又因为 nums[n] 看做负无穷，所以最后一个值就可以看做一个峰顶。
+
+public int findPeakElement(int[] nums) {
+    for (int i = 0; i < nums.length - 1; i++) {
+          if (nums[i] > nums[i + 1]) { //第一次下降
+            return i;
+        }
+    }
+    return nums.length - 1; //一直上升
+}
+
+不需要有序数组也可以二分！先考虑第一次二分的时候，start = 0，end = nums.length - 1。
+如果 nums[mid] < nums[mid + 1]，此时在上升阶段，因为 nums[n] 看做负无穷，也就是最终一定会下降，所以 mid + 1 到 end 之间至少会存在一个峰顶，可以把左半部分抛弃。
+如果 nums[mid] > nums[mid + 1]，此时在下降阶段，因为 nums[0] 看做负无穷，最初一定是上升阶段，所以 start 到 mid 之间至少会存在一个峰顶，可以把右半部分抛弃。
+
+iterative：时间复杂度O(logn)
+public int findPeakElement(int[] nums) {
+    int start = 0, end = nums.length - 1;
+    while(start < end) { //注意是小于end
+        int mid = (start + end) >>> 1;
+        if (nums[mid] < nums[mid + 1]) start = mid + 1;
+        else end = mid;
+    }
+    return start;
+}
+
+recursive：
+public int findPeakElement(int[] nums) {
+    return helper(nums, 0, nums.length - 1);
+}
+private int helper(int[] nums, int start, int end) {
+    if (start == end) return start;
+    int mid = (start + end) >>> 1;
+    if (nums[mid] < nums[mid + 1]) return helper(nums, mid + 1, end);
+    else return helper(nums, start, mid);
+}
