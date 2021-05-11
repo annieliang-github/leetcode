@@ -1,0 +1,41 @@
+Koko loves to eat bananas. There are n piles of bananas, the ith pile has piles[i] bananas. The guards have gone and will come back in h hours.
+Koko can decide her bananas-per-hour eating speed of k. Each hour, she chooses some pile of bananas and eats k bananas from that pile. If the pile has less than k bananas, she eats all of them and will not eat any more bananas during this hour. Return the minimum integer k such that she can eat all the bananas within h hours.
+public int minEatingSpeed(int[] piles, int h) {
+        int maxVal = 1; // 求出最多的香蕉，即为最快的速度，max k
+        //速度最大值就是这几堆香蕉中，数量最多的那一堆
+        for (int pile : piles) maxVal = Math.max(maxVal, pile);
+        
+        int left = 1, right = maxVal; // left是min k，right是max k
+        while (left + 1 < right) {
+            int mid = left + (right - left) / 2;
+            if (calculateTime(piles, mid) > h) { //耗时太多，应加快速度，向右查找
+                left = mid; // [mid, right]
+       } else {
+                right = mid;
+            }
+        }
+        if (calculateTime(piles, left) <= h) return left;
+        if (calculateTime(piles, right) <= h) return right;
+        return -1;
+}
+    
+private int calculateTime(int[] piles, int speed) {
+        int time = 0;
+        // 一个小时之内只能选择一堆香蕉吃，每堆香蕉time = 总数量 / 一小时吃的数量
+        for (int pile : piles) time += (pile + speed - 1) / speed; //上取整
+        return time;
+}
+
+时间复杂度：O(Nlog⁡W)，其中 N 是香蕉堆的数量，W 最大的香蕉堆的大小。空间复杂度：O(1)。
+
+注意：二分法新模板：
+while (left + 1 < right) { //保证左右永远不会重合
+    if … nums[mid] == target: return mid;
+else if … nums[mid] > target: right = mid;
+    else if … nums[mid] < target: left = mid;
+}
+最后判断到底是左还是右符合：
+if (nums[left] == target) return left;
+if (nums[right] == target) return right;
+        
+否则没找到 return -1;
