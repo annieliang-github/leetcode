@@ -1,0 +1,24 @@
+There are several cards arranged in a row, and each card has an associated number of points The points are given in the integer array cardPoints. In one step, you can take one card from the beginning or from the end of the row. You have to take exactly k cards. Your score is the sum of the points of the cards you have taken.
+
+Given the integer array cardPoints and the integer k, return the maximum score you can obtain.
+
+每一步拿牌都是从头或者尾拿, 所以最终剩余的牌一定是连续的, 所以本题换个思路: 总共需要k张牌, 最终剩下n -k张, 找出大小为n-k的滑动窗口, 使得窗口的累加值最小, 其他的值都会被拿走, 累加值最小的连续子序列[i, j], 剩余元素[0, i), (j, n)就是本题需要的解.
+
+public int maxScore(int[] cardPoints, int k) {
+        int n = cardPoints.length;
+          int windowSize = n - k;
+        int sum = 0;
+        for (int i = 0; i < windowSize; i++) {
+            sum += cardPoints[i];
+        }
+        int minSum = sum;
+        for (int i = windowSize; i < n; i++) {
+            // 向右移动一格，增加从右侧进入窗口的元素值，减少从左侧离开窗口的元素值
+            sum += cardPoints[i] - cardPoints[i - windowSize];
+            minSum = Math.min(minSum, sum);
+        }
+        //用所有卡牌的点数之和减去该最小值，即得到了拿走卡牌点数之和的最大值
+        return Arrays.stream(cardPoints).sum() - minSum;
+}
+
+时间复杂度O(n)，空间复杂度O(1)
