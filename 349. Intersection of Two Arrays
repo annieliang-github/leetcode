@@ -1,0 +1,36 @@
+Given two integer arrays nums1 and nums2, return an array of their intersection. Each element in the result must be unique and you may return the result in any order.
+
+ 
+
+Example 1:
+
+Input: nums1 = [1,2,2,1], nums2 = [2,2]
+Output: [2]
+
+Example 2:
+
+Input: nums1 = [4,9,5], nums2 = [9,4,9,8,4]
+Output: [9,4]
+Explanation: [4,9] is also accepted.
+
+ class Solution {
+    public int[] intersection(int[] nums1, int[] nums2) {
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        int len1 = nums1.length, len2 = nums2.length;
+        int[] ans = new int[len1 + len2];
+        int ptr1 = 0, ptr2 = 0, ptr = 0;
+        while (ptr1 < len1 && ptr2 < len2) {
+            int num1 = nums1[ptr1], num2 = nums2[ptr2];
+            if (num1 == num2) {
+                if (ptr == 0 || num1 != ans[ptr - 1]) { //因为要判断ptr-1怕越界，分类讨论0的情况
+                    ans[ptr++] = num1;
+                }
+                ptr1++;
+                ptr2++;
+            } else if (num1 < num2) ptr1++; //继续移动ptr1
+            else ptr2++;
+        }
+        return Arrays.copyOfRange(ans, 0, ptr);
+    }
+}
