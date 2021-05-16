@@ -1,0 +1,42 @@
+Given an array of integers nums, sort the array in ascending order.
+QuickSort：
+时间复杂度：Expected O(nlog⁡n)，因为需要randomize partition 
+空间复杂度：O(h)，其中 h 为快速排序递归调用的层数
+
+class Solution {
+    public int[] sortArray (int[] nums) {     
+        quickSort(nums,0,nums.length-1);
+        return nums;
+    }
+
+    public void quickSort (int[] nums, int low, int high) {
+        if (low < high) {
+            int index = partition(nums,low,high);
+            quickSort(nums, low, index-1);
+            quickSort(nums, index + 1,high);
+        }
+    }
+
+    public int partition (int[] nums, int low, int high) {
+            
+            int pivot = nums[low]; //选最左边的作为pivot number
+            int start = low;
+        
+            while (low < high) {
+                while (low < high && nums[high] >= pivot) high--;           
+                while (low < high && nums[low] <= pivot) low++;
+                
+if (low >= high) break; //双指针相遇，跳出循环
+                    swap(nums, low, high);  
+            }
+            //基准值归位
+            swap(nums, start, low); //把pivot所在的index start和指针index low交换
+            return low; // low即为partition index
+    }  
+
+    public void swap (int[] nums, int i, int j) {      
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+     }
+}
