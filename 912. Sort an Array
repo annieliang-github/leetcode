@@ -40,3 +40,96 @@ if (low >= high) break; //双指针相遇，跳出循环
         nums[j] = temp;
      }
 }
+
+
+
+
+mergeSort 时间复杂度：O(nlogn) 空间复杂度：O(n)
+
+将数组nums分成左边一半和右边一半，两边分别排序。再将已排序好的左边一半和右边一半合并
+
+mergeTwoArrays方法：
+
+建立一个临时数组tmp用于存储排序后的数组分片
+进入循环，分别从两个数组分片的头部开始遍历，比较大小，加到temp中
+两个数组分片未必完全等分，所以在循环完成后将剩余的值也加到temp中
+将temp的值依次替换原本nums的对应位置的值
+
+public int[] sortArray(int[] nums) {
+        mergeSort(nums, 0, nums.length - 1);
+        return nums;
+}
+    
+private void mergeSort(int[] nums, int left, int right) {
+        if (left >= right) return;
+        int mid = left + (right - left) / 2;
+        mergeSort(nums, left, mid);
+        mergeSort(nums, mid + 1, right);
+        mergeTwoArrays(nums, left, mid, right);
+}
+            
+private void mergeTwoArrays(int[] nums, int left, int mid, int right) {
+        int[] temp = new int[nums.length];
+//分别从两个分数组的开头，即 left 和 mid + 1, k是temp的ptr
+        int i = left, j = mid + 1, k = 0; 
+        while (i <= mid && j <= right) {
+            if (nums[i] < nums[j]) temp[k++] = nums[i++];
+            else temp[k++] = nums[j++];
+        }
+        //可能出现一边的数组已经loop完了的情况：
+        while (i <= mid) temp[k++] = nums[i++];
+        while (j <= right) temp[k++] = nums[j++];
+        
+        for (int idx = 0; idx < k; idx++) { //再依次重新放回原数组
+            nums[left + idx] = temp[idx];
+        }
+}
+
+
+
+
+
+
+HeapSort: 
+
+时间复杂度：O(nlog⁡n)。初始化建堆的时间复杂度为 O(n)，建完堆以后需要进行 n−1 次调整，一次调整（即 heapify） 的时间复杂度为 O(log⁡n)，那么 n−1 次调整即需要 O(nlog⁡n) 的时间复杂度。因此，总时间复杂度为 O(n+nlog⁡n) = O(nlogn)。空间复杂度：O(1)。
+
+1.建堆，下沉操作建堆效率更高，找到最后一个非叶子节点，然后从后往前遍历执行下沉操作。
+
+2.排序，将堆顶元素（代表最大元素）与最后一个元素交换，然后新的堆顶元素进行下沉操作，遍历执行上诉操作，则可以完成排序。
+
+public int[] sortArray (int[] nums) {    
+        int len = nums.length;
+        buildMaxHeap(nums);
+        
+        for (int i = len - 1; i >= 1; ) {  // 循环不变量：区间 [0, i] 堆有序
+            swap(nums, 0, i);  // 把堆顶元素（当前最大）交换到数组末尾
+            i--;  // 逐步减少堆有序的部分
+            heapify(nums, 0, i);  // 下标 0 位置下沉操作，使得区间 [0, i] 堆有序
+        }
+        return nums;
+}
+    
+private void buildMaxHeap(int[] nums) {
+        int len = nums.length;
+        for (int i = (len - 1) / 2; i >= 0; i--) { //从(len-1)/2开始
+            heapify(nums, i, len - 1);
+        }
+}
+    
+private void heapify(int[] nums, int k, int end) { //k是当前下沉元素的下标
+        while (2 * k + 1 <= end) {
+            int j = 2 * k + 1;
+            if (j + 1 <= end && nums[j + 1] > nums[j]) j++;
+            if (nums[j] > nums[k]) swap(nums, j, k);
+            else break;
+            k = j;
+        }
+}
+    
+private void swap(int[] nums, int index1, int index2) {
+        int temp = nums[index1];
+        nums[index1] = nums[index2];
+        nums[index2] = temp;
+}
+
