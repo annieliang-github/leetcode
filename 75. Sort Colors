@@ -1,0 +1,40 @@
+Given an array nums with n objects colored red, white, or blue, sort them in-place so that objects of the same color are adjacent, with the colors in the order red, white, and blue. We will use the integers 0, 1, and 2 to represent. 
+Input: nums = [2,0,2,1,1,0] Output: [0,0,1,1,2,2]
+方法一：单指针遍历两次，时间复杂度：O(n)，空间复杂度：O(1)
+public void sortColors(int[] nums) {
+        int n = nums.length;
+        int ptr = 0; //头部指针，第一次遍历把0放到前面
+        for (int i = 0; i < n; i++) {
+            if (nums[i] == 0) {
+                int temp = nums[i];
+                nums[i] = nums[ptr];
+                nums[ptr] = temp;
+                ptr++;
+            }
+        }
+        for (int i = 0; i < n; i++) { //第二次把1放到前面
+            if (nums[i] == 1) {
+                int temp = nums[i];
+                nums[i] = nums[ptr];
+                nums[ptr] = temp;
+                ptr++;
+            }
+        }
+}
+
+方法二：双指针遍历一次，类似刷漆思想，时间复杂度：O(n)，空间复杂度：O(1)
+
+[2 0 2 1 1 1 0]
+-> [2 2 2 2 2 2 2] 先全填上2
+-> [1 1 1 1 1 2 2] 统计下0和1的个数之和(作为数字1的右侧边界)，然后填上1
+-> [0 0 1 1 1 2 2] 统计下0的个数（作为数字0的右侧边界），然后填上0
+
+public void sortColors(int[] nums) {
+        int n = nums.length, p0 = 0, p1 = 0;
+        for (int i = 0; i < n; i++) {
+            int num = nums[i];
+            nums[i] = 2; //先替换成2，该格子可能会被1和0覆盖
+            if (num < 2) nums[p1++] = 1; //优先级0>1>2，再替换成1，最后是0
+            if (num < 1) nums[p0++] = 0; //同时increment各自pointer
+        }
+}
