@@ -1,0 +1,45 @@
+Given an integer array nums and an integer k, return the k most frequent elements. 
+Input: nums = [1,1,1,2,2,3], k = 2 Output: [1,2]
+
+方法一改写快排：平均情况下，时间复杂度为 O(N)。空间复杂度：O(N)。
+
+public int[] topKFrequent(int[] nums, int k) {
+        Map<Integer, Integer> count = new HashMap<>();
+        for (int num : nums) {
+            count.put(num, count.getOrDefault(num, 0) + 1);
+        }
+        
+        List<int[]> numCount = new ArrayList<>();
+        // int[] 的第一个元素代表数组的值，第二个元素代表了该值出现的次数
+        for (Map.Entry<Integer, Integer> entry : count.entrySet()) {
+            int num = entry.getKey(), cnt = entry.getValue();
+            numCount.add(new int[] {num, cnt});
+        }
+        List<int[]> ansList = findTopK(numCount, 0, numCount.size() - 1, k);
+        int[] ans = new int[k]; // 返回的数组有k个元素
+        for (int i = 0; i < k; i++) ans[i] = ansList.get(i)[0]; //拿到具体元素
+        return ans;
+}
+    
+//之前都是从小到大sort，此次quickSort为从大到小
+private List<int[]> findTopK(List<int[]> numCount, int left, int right, int k) {
+        int index = left + (int)(Math.random() * (right - left + 1));
+        Collections.swap(numCount, left, index);
+        
+        // 按照频率排序，不是按照元素大小，所以要get(index)[1]得到次数
+        int pivot = numCount.get(left)[1];
+        int j = left;
+        //从第2个元素开始遍历，把比pivot大的挪到左边，比pivot小的挪到右边
+        for (int i = left + 1; i <= right; i++) {
+            if(numCount.get(i)[1] > pivot){ //注意！！！这里是 >
+                j++;
+                Collections.swap(numCount, j, i);
+            }
+            }
+        }
+        Collections.swap(numCount, j, left); //j为分割点，左边比pivot大，右边比pivot小
+        
+if (j == k - 1) return numCount.subList(0, k);
+        else if (j > k - 1) return findTopK(numCount, left, j - 1, k); // 大了向左递归
+        else return findTopK(numCount, j + 1, right, k); //小了，向右递归
+}
