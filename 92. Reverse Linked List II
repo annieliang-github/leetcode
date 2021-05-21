@@ -1,0 +1,33 @@
+Given the head of a singly linked list and two integers left and right where left <= right, reverse the nodes of the list from position left to position right, and return the reversed list.
+
+Input: head = [1,2,3,4,5], left = 2, right = 4
+Output: [1,4,3,2,5]
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode reverseBetween(ListNode head, int left, int right) {
+        ListNode dummy = new ListNode(0, head);
+        ListNode guard = dummy;
+        ListNode point = dummy.next;
+        for (int i = 1; i < left; i++) {
+            point = point.next; //point是第一个要反转的节点，相当于curr
+            guard = guard.next; //guard是反转的节点前一个点
+        }
+        for (int i = 0 ; i < right - left; i++) {
+            ListNode removed = point.next;
+            point.next = point.next.next; //把point.next拿走掉，point指着第三个位置
+            removed.next = guard.next; // guard.next原本是point，现在removed指着point，头插
+            guard.next = removed; // 连接上
+        }
+        return dummy.next;
+    }
+}
