@@ -1,0 +1,36 @@
+Given a linked list, return the node where the cycle begins. If there is no cycle, return null.
+
+第一步：如果fast走到链表末尾则无环，当fast == slow时，两指针在环中第一次相遇。
+
+设链表共有 a+b 个节点，其中 链表头部到链表入口 有 a 个节点， 链表环 有 b 个节点；设两指针分别走了 f，s 步，则有：f=2s；fast 比 slow多走了 n 个环的长度，即 f=s+nb
+
+以上两式相减得：s=nb，f=2nb。即fast和slow 指针分别走了 2n和n 个环的周长。
+
+如果让指针从链表头部一直向前走并统计步数k，那么所有走到链表入口节点时的步数是：k=a+nb    而目前 slow 指针走过的步数为 nb 步，只要想办法让 slow 再走 a 步，就可以到环的入口。
+    
+第二步：构建一个指针，此指针指向链表头部 head，和slow 一起向前走 a 步后，两者在入口节点重合，返回slow指针指向的节点。
+
+public class Solution {
+    public ListNode detectCycle(ListNode head) {
+        if (head == null || head.next == null) return null;
+        ListNode fast = head, slow = head;
+        while (fast != null && fast.next != null) {
+            fast = fast.next.next;
+            slow = slow.next;
+            if (fast == slow) {
+                ListNode ptr = head;  // 指针ptr指向头部，slow还在原地
+                // ptr和slow同步进行移动，最后两者相等时则为入环点
+                while (ptr != slow) {
+                    ptr = ptr.next;
+                    slow = slow.next;
+                }
+                return ptr;
+            }
+        }
+        return null;
+    }
+}
+
+时间复杂度O(n)，空间复杂度O(1)
+
+与上题一样，也可以用HashSet解决，时间空间都为O(n)
