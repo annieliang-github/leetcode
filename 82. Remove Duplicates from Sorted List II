@@ -1,0 +1,43 @@
+Given the head of a sorted linked list, delete all nodes that have duplicate numbers, leaving only distinct numbers from the original list. 
+public ListNode deleteDuplicates(ListNode head) {
+        if (head == null || head.next == null) return head;
+        Map<Integer, Boolean> map = new HashMap<>();
+        ListNode curr = head, dummy = new ListNode(0, head);
+        while (curr != null) {
+            if (map.containsKey(curr.val)) map.put (curr.val, true);
+            else map.put(curr.val, false);
+            curr = curr.next;
+        }
+        curr = dummy; //重置指针
+        while (curr != null && curr.next != null) {
+// 如果没到头，且map显示为true（重复）
+            while (curr.next != null && map.get(curr.next.val)) {                 
+curr.next = curr.next.next; //跳过该节点
+            }
+            curr = curr.next;
+        }
+        return dummy.next;
+}    时间复杂度O(n)两次遍历，空间复杂度O(n)为map的长度
+
+public ListNode deleteDuplicates(ListNode head) {
+        if (head == null || head.next == null) return head;
+        ListNode dummy = new ListNode(0, head);
+        ListNode left = dummy, right = head;
+        
+    while (right != null && right.next != null) {
+//初始化的时left指向的是dummy，比较逻辑应该是left的下一个节点和right的下一个节点
+       if (left.next.val != right.next.val) {
+        left = left.next;
+        right = right.next;
+        } else { // 如果一样，需要不断移动right，直到不相同
+while(right!=null&&right.next!=null&&left.next.val==right.next.val) {
+                    right = right.next; //只要相等就一直往右挪
+       } //跳出循环时，left和right不等
+       left.next = right.next;
+       right = right.next;
+        }
+    }
+    return dummy.next;
+}
+
+时间复杂度O(n)，空间复杂度O(1)
