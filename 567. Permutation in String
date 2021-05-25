@@ -1,0 +1,50 @@
+Given two strings s1 and s2, return true if s2 contains the permutation of s1.
+
+In other words, one of s1's permutations is the substring of s2.
+
+ 
+
+Example 1:
+
+Input: s1 = "ab", s2 = "eidbaooo"
+Output: true
+Explanation: s2 contains one permutation of s1 ("ba").
+public boolean checkInclusion(String s1, String s2) {
+        int len1 = s1.length(), len2 = s2.length();
+        if (len1 > len2) return false;
+        
+        // 定义滑动窗口的范围是 [left, right]，闭区间，长度与s1相等
+        int left = 0, right = len1 - 1; 
+        int[] count1 = new int[26];
+        for (int i = 0; i < len1; i++) count1[s1.charAt(i) - 'a']++;
+
+        //使用一个长度和 s1 长度相等的固定窗口大小的滑动窗口，在 s2 上面从左向右滑动
+        // i.e. len1 = 3, len2 = 5, 一共要查找3次(123,234,345)，5-3+1
+        for (int i = 0; i < len2 - len1 + 1; i++) { // i代表几个sliding window
+            int[] count2 = new int[26];
+            for (int j = 0; j < len1; j++) {
+                    count2[s2.charAt(i + j) - 'a']++; //第i次的第j位
+            }
+            if (matches(count1, count2)) return true;
+        }
+        return false;
+}
+private boolean matches(int[] count1, int[] count2) {
+        for (int i = 0; i < 26; i++) {
+            if (count1[i] != count2[i]) return false;
+        }
+        return true;
+}
+
+时间复杂度: O(l1+26∗l1∗(l2−l1)) 空间复杂度：O(1)，使用26个字符的数组
+或者直接用len2 loop，但当长度大于S1时，减去左侧元素，最后用Arrays.equals对比
+        //窗口向左滑动（缩减）时，减去count2中对应的字符数量
+        //窗口向右滑动（扩张）时，增加count2中对应字符的数量
+         for (int i = 0; i < len1; i++) count1[s1.charAt(i) - 'a']++;
+        for (int i = 0; i < len2; i++) {
+            count2[s2.charAt(i) - 'a']++;
+            if (i >= len1) count2[s2.charAt(i - len1) - 'a']--;
+            if (Arrays.equals(count1, count2)) return true;
+        }
+        return false;  
+
