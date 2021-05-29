@@ -1,0 +1,29 @@
+Given an integer columnNumber, return its corresponding column title as it appears in an Excel sheet.
+
+For example:
+A -> 1        B -> 2        C -> 3        …    Z -> 26
+AA -> 27    AB -> 28
+
+因为 Excel 取值范围为 1~26，故可将 26 进制 逻辑上的 个位、十位、百位…均减 1 映射到 0~25 即可，最后转换为字符
+
+i.e. 将数字 486 由 10 进制转换为 10 进制
+while < 486
+486 / 10^0 % 10 -> 个位6
+486 / 10^1 % 10 -> 十位8
+486 / 10^2 % 10 -> 百位4
+
+=> 得到684 最后reverse 即为 486
+
+class Solution {
+    public String convertToTitle(int columnNumber) {
+        StringBuilder sb = new StringBuilder();
+        while (columnNumber != 0) {
+            columnNumber -= 1; //因为A对应1，先减去1，对应0-25
+            int num = 'A' + columnNumber % 26;
+            sb.append((char) num);
+            columnNumber /= 26;
+        }
+        return sb.reverse().toString();
+    }
+}
+
