@@ -1,0 +1,34 @@
+You are given a sorted unique integer array nums.
+Return the smallest sorted list of ranges that cover all the numbers in the array exactly. That is, each element of nums is covered by exactly one of the ranges, and there is no integer x such that x is in one of the ranges but not in nums.
+Each range [a,b] in the list should be output as:
+"a->b" if a != b
+"a" if a == b
+Input: nums = [0,1,2,4,5,7]
+Output: ["0->2","4->5","7"]
+Explanation: The ranges are:
+[0,2] --> "0->2"
+[4,5] --> "4->5"
+[7,7] --> "7"
+
+使用 双指针，i 指向每个区间的起始位置，j 从 i 开始向后遍历直到不满足连续递增（或 j 达到数组边界），则当前区间结束；然后将 i 指向更新为 j + 1，作为下一个区间的开始位置，j 继续向后遍历找下一个区间的结束位置，如此循环，直到输入数组遍历完毕。
+
+public List<String> summaryRanges(int[] nums) {
+        List<String> ans = new ArrayList<>();
+        int i = 0, len = nums.length;
+        
+        for (int j = 0; j < len; j++) {
+            // 如果到达数组边界，或者不满足连续递增，将当前区间[i,j]放入ans
+            if (j + 1 == len || nums[j] + 1 != nums[j + 1]) {
+// 在loop里每次新sb，否则之前的还在
+                StringBuilder sb = new StringBuilder(); 
+                sb.append(nums[i]);
+                if (i != j) sb.append("->").append(nums[j]);
+                ans.add(sb.toString());
+                // 将 i 更新为 j+1, 作为下一个区间的开始点继续loop
+                i = j + 1;
+            }
+        }
+        return ans;
+}
+
+时间复杂度O(n)，空间复杂度O(1)
