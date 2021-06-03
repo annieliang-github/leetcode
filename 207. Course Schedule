@@ -61,3 +61,33 @@ class Solution {
 }
 
 
+
+class Solution {
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        List<List<Integer>> adjacency = new ArrayList<>();
+        for (int i = 0; i < numCourses; i++) {
+            adjacency.add(new ArrayList<>());
+        }
+        int[] flags = new int[numCourses];
+        for (int[] info : prerequisites) {
+            // 把对应的可以后上的课，加入该先修课对应的List
+            adjacency.get(info[1]).add(info[0]); 
+        }
+        for (int i = 0; i < numCourses; i++) {
+            if (!dfs(adjacency, flags, i)) return false; //只要有一个false就终止
+        }
+        return true;
+    }
+    
+    private boolean dfs(List<List<Integer>> adjacency, int[] flags, int i) {
+        if (flags[i] == 1) return false; // 已经被此次dfs访问过，有环
+        if (flags[i] == -1) return true; // 之前被访问过，可以
+        // 如果此时为0，改为1，标记其被本轮 DFS 访问过
+        flags[i] = 1;
+        for (int j : adjacency.get(i)) { // 递归访问当前节点 i 的所有邻接节点 j
+            if (!dfs(adjacency, flags, j)) return false; // 如果有环，false
+        }
+        flags[i] = -1; // 次轮dfs结束，换成-1并返回true
+        return true;
+    }
+}
