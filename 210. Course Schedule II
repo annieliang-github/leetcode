@@ -1,0 +1,51 @@
+There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai.
+For example, the pair [0, 1], indicates that to take course 0 you have to first take course 1.
+Return the ordering of courses you should take to finish all courses. If there are many valid answers, return any of them. If it is impossible to finish all courses, return an empty array.
+Input: numCourses = 2, prerequisites = [[1,0]]
+Output: [0,1]
+Explanation: There are a total of 2 courses to take. To take course 1 you should have finished course 0. So the correct course order is [0,1].
+
+
+
+拓扑排序实际上应用的是贪心算法，贪心算法简而言之：每一步最优，则全局最优。
+
+具体到拓扑排序，每一次都从图中删除没有前驱的顶点，这里并不需要真正的做删除操作，我们可以设置一个入度数组，每一轮都输出入度为 0 的结点，并移除它、修改它指向的结点的入度（−1即可），依次得到的结点序列就是拓扑排序的结点序列。如果图中还有结点没有被移除，则说明“不能完成所有课程的学习”。
+
+算法流程：
+
+1、在开始排序前，扫描对应的存储空间（使用邻接表），将入度为 0 的结点放入队列。
+
+2、只要队列非空，就从队首取出入度为 0 的结点，将这个结点输出到结果集中，并且将这个结点的所有邻接结点（它指向的结点）的入度减 1，在减 1 以后，如果这个被减 1 的结点的入度为 0 ，就继续入队。
+
+3、当队列为空的时候，检查结果集中的顶点个数是否和课程数相等即可。
+
+解法一：BFS，时间复杂度O(V+E)，空间复杂度O(v)
+public int[] findOrder(int numCourses, int[][] prerequisites) {
+        if (numCourses < 1) return new int[0]; //0个或以下，返回空数组
+        int[] inDegrees = new int[numCourses];
+        for (int[] info : prerequisites) { // 对于有先修课的课程，计算有几门先修课
+            inDegrees[info[0]]++; // info[0]是后上的课
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0;i < inDegrees.length; i++) {
+            if (inDegrees[i] == 0) queue.offer(i); // 入度为0的节点队列
+        }
+        int count = 0; // 可以学完的课程数量
+        int[] ans = new int[numCourses]; // 可以学完的课程
+        
+        // 根据提供的先修课列表，删除入度为 0 的节点，如果有多个节点，顺序无所谓
+        while (!queue.isEmpty()) {
+            int course = queue.poll();
+            ans[count] = course; // 入度为0，可直接选课，放入ans中
+        // 重新遍历一遍，所有先修是course的课，入度-1
+            for (int[] info : prerequisites) { 
+                if (info[1] == course) { // info[1]为先修
+                    inDegrees[info[0]]--; // 后上的课入度-1
+                    if (inDegrees[info[0]] == 0) queue.offer(info[0]);
+                }
+            }
+            count++;
+        }
+        if (count == numCourses) return ans; // 如果都完成了，返回ans
+        return new int[0]; // 还有结点没有被移除，不能成功，返回空数组
+}
