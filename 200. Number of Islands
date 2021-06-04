@@ -30,3 +30,40 @@ private void dfs(char[][] grid, int i, int j) {
 }
 
 时间复杂度O(mn） 空间复杂度O(mn)：在最坏情况下，整个网格均为陆地
+
+
+
+思路一：广度优先遍历 BFS
+
+bfs 方法：
+借用一个队列 queue，判断队列首部节点 (i, j) 是否未越界且为 1：
+若是则置0（删除岛屿节点），并将此节点上下左右节点 加入队列；
+若不是则跳过此节点；循环 pop 队列首节点，直到整个队列为空，此时已经遍历完此岛屿。
+
+前面的主function与dfs一样，但是call的时候换成bfs(grid, i, j)
+BFS写法：
+注意，bfs中判断的是i和j不越界且为1就入queue，dfs中判断是如果越界且=0就return    
+
+private void bfs(char[][] grid, int i, int j) {
+        int rows = grid.length;
+        int cols = grid[0].length;
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(new int[] {i, j});
+        while (!queue.isEmpty()) {
+            int[] index = queue.poll();
+            i = index[0];
+            j = index[1]; // 获取到i和j的数值
+            if (i >= 0 && i < rows && j >= 0 && j < cols && grid[i][j] == '1') {
+                grid[i][j] = '0';
+                queue.add(new int[] {i + 1, j});
+                queue.add(new int[] {i - 1, j});
+                queue.add(new int[] {i, j + 1});
+                queue.add(new int[] {i, j - 1});
+            }
+        }
+}
+
+时间复杂度：O(MN)，其中 M 和 N 分别为行数和列数。
+空间复杂度：O(min⁡(M,N))，最坏情况下，整个网格均为陆地，队列的大小可以达到 min⁡(M,N)。
+
+此处Queue<int[]>放入数组坐标，也可直接放入唯一index (i * cols + j), poll出queue后，再通过 i = index / col 和 j = index % col找回（i，j）
