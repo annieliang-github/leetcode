@@ -1,0 +1,39 @@
+Given two strings s and t, determine if they are isomorphic. All occurrences of a character must be replaced with another character while preserving the order of characters. No two characters may map to the same character, but a character may map to itself.
+Input: s = "egg", t = "add"
+Output: true
+
+方法一：看s和t第一个遇到的iindex上的char的index，是否相同
+
+class Solution {
+    public boolean isIsomorphic(String s, String t) {
+        for (int i = 0; i < s.length(); i++) {
+            if (s.indexOf(s.charAt(i)) != t.indexOf(t.charAt(i))) {
+                    return false;
+            }
+        }
+        return true;
+    }
+}
+
+方法二：哈希表映射。
+
+维护两张哈希表，第一张哈希表 sTot 以 s 中字符为key，映射至 t 的字符为val，第二张哈希表反之。从左至右遍历两个字符串的字符，不断更新两张哈希表，如果出现冲突（即当前下标 index 对应的字符 s[index] 已经存在映射且不为 t[index] 或反之，说明两个字符串无法构成同构，返回 false。如果遍历结束没有出现冲突，则表明两个字符串是同构的，返回 true 。
+    
+public boolean isIsomorphic(String s, String t) {
+        Map<Character, Character> sTot = new HashMap<>();
+        Map<Character, Character> tTos = new HashMap<>();
+        int len = s.length();
+        for (int i = 0; i < len; i++) {
+            char x = s.charAt(i);
+            char y = t.charAt(i);
+            if (sTot.containsKey(x) && sTot.get(x) != y ||
+               (tTos.containsKey(y) && tTos.get(y) != x)) {
+                return false;
+            }
+            sTot.put(x, y);
+            tTos.put(y, x);
+        }
+        return true;
+}
+
+时间复杂度：O(n)。空间复杂度：O(Σ)，其中 Σ 是字符串的字符集。
