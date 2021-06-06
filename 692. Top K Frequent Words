@@ -1,0 +1,41 @@
+Given a non-empty list of words, return the k most frequent elements. Your answer should be sorted by frequency from highest to lowest. If two words have the same frequency, then the word with the lower alphabetical order comes first.
+Input: ["i", "love", "leetcode", "i", "love", "coding"], k = 2
+Output: ["i", "love"]
+
+方法一：小根堆每次弹出的是堆顶的最小元素，能最后留在堆里面的，都是最大的K个元素。
+
+因为维护一个大小为 K 的小根堆，堆顶元素是其中最小的 每次都把最小的元素弹出这样最后剩下的就是 K 个最大的元素了，时间复杂度NlogK，如果用大根堆，就需要全部元素 N 都进去。然后从大根堆再弹出 前K个 这样时间复杂度是 NlogN。区别在于我们需要维护堆的元素数量。
+
+public List<String> topKFrequent(String[] words, int k) {
+        List<String> ans = new ArrayList<>();
+        if (words == null) return ans;
+        // 1.先用哈希表统计单词出现的频率
+        Map<String, Integer> map = new HashMap<>();
+        for (String str : words) {
+            map.put(str, map.getOrDefault(str, 0) + 1);
+        }       
+        // 2.构建小根堆 此处为 lambda 写法 Java 的优先队列默认实现就是小根堆
+        PriorityQueue<String> minHeap = new PriorityQueue<>((s1, s2) -> {
+            if (map.get(s1).equals(map.get(s2))) {
+                //compare(o1,o2) 如果第一个参数<,=,>第二个参数，则分别返回负，零和正
+                    return s2.compareTo(s1);
+            } else {
+                    return map.get(s1) - map.get(s2);
+            }
+        });     
+        // 3.依次向堆加入元素。
+        for (String str : map.keySet()) {
+            minHeap.offer(str);
+            if (minHeap.size() > k) { // 大于k就弹出堆顶最小的，始终维持k个最大
+                    minHeap.poll();
+            }
+        } 
+        // 4.依次弹出堆中的 K 个元素，放入结果集合中。
+        while (minHeap.size() > 0) {
+            ans.add(minHeap.poll());
+        } 
+        // 5.注意最后需要反转元素的顺序, 因为是从小到大加入的minHea
+        Collections.reverse(ans);
+        return ans;
+}
+时间复杂度：O(Nlog⁡(K)) 空间复杂度：O(N)。需要建堆和用哈希表计数。
