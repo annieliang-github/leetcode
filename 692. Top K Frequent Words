@@ -39,3 +39,28 @@ public List<String> topKFrequent(String[] words, int k) {
         return ans;
 }
 时间复杂度：O(Nlog⁡(K)) 空间复杂度：O(N)。需要建堆和用哈希表计数。
+
+
+
+class Solution {
+    public List<String> topKFrequent(String[] words, int k) {
+        // 1.初始化 哈希表 key -> 字符串 value -> 出现的次数。
+        Map<String, Integer> count = new HashMap<>();
+        for (String word : words) {
+            count.put(word, count.getOrDefault(word, 0) + 1);
+        }
+        List<String> ans = new ArrayList<>(count.keySet());
+        ans.sort((a, b) -> {
+            // 字符串频率相等按照字典序比较使得大的在堆顶
+            if (count.get(a).equals(count.get(b))) return a.compareTo(b);
+            // 字符串频率不等则按照频率排列。
+            else return count.get(b) - count.get(a);
+        });
+        
+        // 3.截取前 K 大个高频单词返回结果。
+        return ans.subList(0, k);
+    }
+}
+
+时间复杂度：O(Nlog⁡(N)) 需要 O(N) 时间计算每个单词的频率，集合排序需要 O(Nlog⁡(N))
+空间复杂度：O(N)
