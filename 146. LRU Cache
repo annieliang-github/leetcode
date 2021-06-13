@@ -1,0 +1,84 @@
+Design a data structure that follows the constraints of a Least Recently Used (LRU) cache. Implement the LRUCache class:
+LRUCache(int capacity) Initialize the LRU cache with positive size capacity.
+int get(int key) Return the value of the key if the key exists, otherwise return -1.
+void put(int key, int value) Update the value of the key if the key exists. Otherwise, add the key-value pair to the cache. If the number of keys exceeds the capacity from this operation, evict the least recently used key.
+将K-V键值对存储在Node节点中，并且该节点有两个指针，prev和next，用于组成双向链表。
+
+因为每次操作一个节点的时候需要将其放到头部，构成的双向链表可以让这个操作达到O（1）
+
+对于get操作，利用hashMap来实现O（1）级别，hashmap中存储的并不是k - v，而是k - node，这样子的好处是，每次查询的时候还可以顺便拿到对应node的句柄来将其放到头部
+
+
+class LRUCache {
+    class Node {
+        int key, val;
+        Node prev, next;
+        public Node() {} //default constructor
+        public Node (int key, int val) {
+            this.key = key;
+            this.val = val;
+        }
+}
+    
+Map<Integer, Node> map = new HashMap<>();
+int size;
+int capacity;
+Node head, tail;
+    
+public LRUCache(int capacity) {
+        this.size = 0;
+        this.capacity = capacity;
+        head = new Node();
+        tail = new Node();
+        head.next = tail;
+        tail.prev = head;
+}
+        
+public int get(int key) {
+        Node node = map.get(key);
+        if (node == null) return -1;
+        movetoHead(node);
+        return node.val;
+}
+        
+public void put(int key, int val) {
+        Node node = map.get(key);
+        if (node == null) { // if key doesn't exist
+            Node newNode = new Node(key, val);
+            map.put(key, newNode);
+            addtoHead(newNode);
+            size++;
+            if (size > capacity) {
+                Node tail = delTail(); // remove tail and remove tail in map
+                map.remove(tail.key);
+                size--; //decrement tail
+            }
+        } else {
+            node.val = val;
+            movetoHead(node);
+        }
+}
+        
+private void addtoHead(Node node) {
+        node.prev = head;
+        node.next = head.next;
+        head.next.prev = node;
+        head.next = node;
+}
+        
+private void delNode(Node node) {
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
+}
+        
+private void movetoHead(Node node) {
+        delNode(node);
+        addtoHead(node);
+}
+        
+private Node delTail() {
+        Node node = tail.prev;
+        delNode(node);
+        return node;
+    }
+}
