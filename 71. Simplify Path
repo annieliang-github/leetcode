@@ -1,0 +1,36 @@
+Given a string path, which is an absolute path (starting with a slash '/') to a file or directory in a Unix-style file system, convert it to the simplified canonical path.
+In a Unix-style file system, a period '.' refers to the current directory, a double period '..' refers to the directory up a level, and any multiple consecutive slashes (i.e. '//') are treated as a single slash '/'. For this problem, any other format of periods such as '...' are treated as file/directory names.
+The canonical path should have the following format:
+The path starts with a single slash '/'.
+Any two directories are separated by a single slash '/'.
+The path does not end with a trailing '/'.
+The path only contains the directories on the path from the root directory to the target file or directory (i.e., no period '.' or double period '..')
+public String simplifyPath(String path) {
+        Stack<String> stack = new Stack<>();
+        for (String str : path.split("/")) {
+            
+            // 如果是 “..” 说明要返回上一级,要将当前元素出栈
+            if (str.equals("..")) {
+                if (!stack.isEmpty()) stack.pop(); //需先判断stack是否为空
+                
+            //如果不为空也不为 “.” 这说明当前元素是路径信息，入栈即可
+            } else if (!str.isEmpty() && !str.equals(".")) {
+                    stack.push(str);
+            }
+        }
+        
+        /*下面也可以写成：
+            if (stack.isEmpty) return "/";
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < stack.size(); i++) {
+                    sb.append(" /" + stack.get(i));
+            }
+            return sb.toString();
+        */
+        String ans = "";
+        Collections.reverse(stack); //因为stack是逆序的
+        for (String str : stack) {
+            ans = "/" + str + ans;
+        }
+        return ans.length() == 0 ? "/" : ans;
+}
