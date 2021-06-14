@@ -1,0 +1,41 @@
+Given a string s, sort it in decreasing order based on the frequency of characters, and return the sorted string.
+Input: s = "tree"
+Output: "eert"
+Explanation: 'e' appears twice while 'r' and 't' both appear once.
+So 'e' must appear before both 'r' and 't'. Therefore "eetr" is also a valid answer.
+
+方法一：hashMap + sort
+public String frequencySort(String s) {
+        Map<Character, Integer> map = new HashMap<>();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            map.put(c, map.getOrDefault(c, 0) + 1);
+        }
+        //根据value进行降序排列
+        List<Map.Entry<Character, Integer>> list = new ArrayList<>(map.entrySet());
+        list.sort((a, b) -> b.getValue() - a.getValue()); //b-a为value从大到小排列
+        
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<Character, Integer> item : list) {
+            char key = item.getKey();
+            int val = item.getValue(); //出现了几次就要loop几次，把这些字母加到sb中
+            for (int i = 0 ; i < val; i++) {
+                    sb.append(key);
+            }
+        }
+        return sb.toString();
+}
+
+方法二：hashMap + maxHeap，与前面类似，得到哈希表后，把中的键值对加到堆中，按照value形成最大堆。循环弹出堆中的value最大的字符，将字符根据其出现次数加到res中
+
+得到map后：
+        Queue<Map.Entry<Character, Integer>> maxHeap = new PriorityQueue<>((a, b) -> b.getValue() - a.getValue());
+        maxHeap.addAll(map.entrySet());
+        StringBuilder sb = new StringBuilder();
+        while (!maxHeap.isEmpty()) {
+            Map.Entry<Character, Integer> item = maxHeap.poll();
+            。。。。后面都一样
+            }
+        }
+        
+两种方法时间复杂度：O(n+klogk)。空间复杂度：O(n)
