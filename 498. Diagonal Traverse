@@ -1,0 +1,39 @@
+Given an m x n matrix mat, return an array of all the elements of the array in a diagonal order.
+Input: mat = [[1,2,3],[4,5,6],[7,8,9]]
+Output: [1,2,4,7,5,3,6,8,9]
+
+注意：在分析可能的三种情况时，一定要先写if到最右和最下，因为要不然最右上和左下的顶点可能被重复计数！
+
+public int[] findDiagonalOrder(int[][] matrix) {
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0)
+            return new int[0];
+        // 左下到右上的对角线：|x-y|一样，用奇偶判断向上还是向下走
+        // 左上到右下的对角线：|x+y|一样
+        int m = matrix.length, n = matrix[0].length;
+        int[] ans = new int[m * n];
+        int row = 0, col = 0;
+        for (int i = 0; i < ans.length; i++) { //i是在ans中的index
+            ans[i] = matrix[row][col];
+            if ((row + col) % 2 == 0) { //偶数，说明向右上
+                // 1，到最右侧，向下；2，到最顶端，向右；3，正常，右上
+                if (col == n - 1) row++;
+                else if (row == 0) col++;
+                else {
+                          row--;
+                          col++;
+                }
+            } else { // 奇数，说明向左下
+                // 1，到最下面，向右；2，到最左边，向下；4，正常，左下
+                if (row == m - 1) col++;
+                else if (col == 0) row++;
+                else {
+                          col--;
+                          row++;
+                }
+            }
+        }
+        return ans;
+}
+
+
+时间复杂度O(mn)，空间复杂度O(1)，不使用额外空间。输出数组空间不计入空间复杂度。
