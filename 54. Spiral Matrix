@@ -13,6 +13,36 @@ Example 2:
 Input: matrix = [[1,2,3,4],[5,6,7,8],[9,10,11,12]]
 Output: [1,2,3,4,8,12,11,10,9,5,6,7]
 
+public List<Integer> spiralOrder(int[][] matrix) {
+        List<Integer> ans = new ArrayList<>();
+        if (matrix == null || matrix.length == 0) return ans;
+        int left = 0, right = matrix[0].length - 1;
+      int top = 0, bottom = matrix.length - 1;
+        while (left <= right && top <= bottom) {
+            for (int i = left; i <= right; i++) {
+                ans.add(matrix[top][i]); //遍历top所有，到right向下
+            }      
+            top++; // 需要跳出for loop后增加top
+            for (int i = top; i <= bottom; i++) {
+                ans.add(matrix[i][right]);
+            }
+            right--; 
+            if (top <= bottom && left <= right) { //需要判断是否越界
+                for (int i = right; i >= left; i-- ) { // 遍历最后一行所有
+                          ans.add(matrix[bottom][i]);
+                }   
+                bottom--;
+                for (int i = bottom; i >= top; i--) { //遍历第一列所有
+                          ans.add(matrix[i][left]);
+                }
+                left++;
+            }
+        }
+        return ans;
+}
+
+
+时间复杂度O(mn)， 空间复杂度O(1)
 
 
 
