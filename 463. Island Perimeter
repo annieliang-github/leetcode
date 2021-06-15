@@ -32,3 +32,37 @@ public int islandPerimeter(int[][] grid) {
 
 
 时间复杂度O(mn)，我们需要遍历每个格子，每个格子要看其周围 4 个格子是否为岛屿，因此总时间复杂度为 O(4nm)=O(nm)。空间复杂度O(1)。
+
+
+
+
+class Solution {
+    public int islandPerimeter(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        int ans = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    ans += dfs(grid, i, j);
+                }
+            }
+        }
+        return ans;
+    }
+    
+    private int dfs(int[][] grid, int i, int j) { // 返回该点贡献的边长数
+        int m = grid.length, n = grid[0].length;
+        if (i < 0 || i >= m || j < 0 || j >= n || grid[i][j] == 0) return 1;
+        if (grid[i][j] == 2) return 0;
+        grid[i][j] = 2; // 设置为2防止二次遍历
+        int count = 0;
+        count += dfs(grid, i - 1, j);
+        count += dfs(grid, i + 1, j);
+        count += dfs(grid, i, j - 1);
+        count += dfs(grid, i, j + 1);
+        return count;
+    }
+}
+
+
+ 
