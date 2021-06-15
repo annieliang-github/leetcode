@@ -13,6 +13,40 @@ Input: n = 1
 Output: [[1]]
 
 
+class Solution {
+    public int[][] generateMatrix(int n) {
+        int[][] ans = new int[n][n];
+        int curr = 1;
+        int top = 0, bottom = n - 1, left = 0, right = n - 1;
+        while (left <= right && top <= bottom) {
+            for (int i = left; i <= right; i++) {
+                ans[top][i] = curr++; //把第一行填上数字
+            }
+            top++;
+            
+            for (int i = top; i <= bottom; i++) {
+                ans[i][right] = curr++;
+            }
+            right--;
+            if (left <= right && top <= bottom) {
+                for (int i = right; i >= left; i--) {
+                    ans[bottom][i] = curr++;
+                }
+                bottom--;
+
+                for (int i = bottom; i >= top; i--) {
+                    ans[i][left] = curr++;
+                }
+                left++;
+            }
+            
+        }
+        return ans;
+    }
+}
+
+
+
 
 class Solution {
     public int[][] generateMatrix(int n) {
