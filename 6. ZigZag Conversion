@@ -1,0 +1,37 @@
+The string "PAYPALISHIRING" is written in a zigzag pattern on a given number of rows like this: (you may want to display this pattern in a fixed font for better legibility)
+P   A   H   N
+A P L S I I G
+Y   I   R
+And then read line by line: "PAHNAPLSIIGYIR"
+Write the code that will take a string and make this conversion given a number of rows: string convert(string s, int numRows);
+Input: s = "PAYPALISHIRING", numRows = 3
+Output: "PAHNAPLSIIGYIR"
+
+public String convert(String s, int numRows) {
+        if (s == null || s.length() == 0 || numRows == 1)
+            return s; //只有一行的时候无区别
+        StringBuilder[] sbArray = new StringBuilder[numRows];
+        for (int i = 0; i < numRows; i++) {
+            sbArray[i] = new StringBuilder(); //每行都初始化sb
+        }
+        int row = 0;
+        boolean isDown = true; // 是否向下
+        for (int i = 0; i < s.length(); i++) {
+            sbArray[row].append(s.charAt(i));
+            if (row == numRows - 1) { //到最下一行后，就拐弯向上
+                    isDown = false;
+            } else if (row == 0) { //到第一行后，拐弯向下
+                    isDown = true;
+            }
+            if (isDown) row++; // 如果方向向下，row++，反之row--
+            else row--;
+        }
+        // 以sbArray[0]为基准，把后面所有的都append到它后面，故从i=1开始
+        for (int i = 1; i < numRows; i++) {
+            sbArray[0].append(sbArray[i].toString());
+        }
+        return sbArray[0].toString();
+}
+
+
+时间复杂度O(n)，n为s的长度，空间复杂度O(n)
