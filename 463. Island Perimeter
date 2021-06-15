@@ -1,1 +1,34 @@
 
+You are given row x col grid representing a map where grid[i][j] = 1 represents land and grid[i][j] = 0 represents water. Determine the perimeter of the island.
+
+Input: grid = [[0,1,0,0],[1,1,1,0],[0,1,0,0],[1,1,0,0]]
+Output: 16
+
+Explanation: The perimeter is the 16 yellow stripes in the image above.
+
+
+public int islandPerimeter(int[][] grid) {
+        if (grid == null || grid.length == 0 || grid[0].length == 0) {
+            return 0;
+        }
+        int m = grid.length, n = grid[0].length;
+        int ans = 0;
+        for (int i = 0 ; i < m; i++) {
+            for (int j = 0 ; j < n; j++) {
+                if (grid[i][j] == 1) { // 如果为1，说明当前格子是陆地
+                    // 遍历四个边的格子
+                    // 如果该格子在边界，或者边上有水，边长贡献+1
+                          int x1 = i - 1, x2 = i + 1;
+                          int y1 = j - 1, y2 = j + 1;       
+                          if (x1 < 0 || grid[x1][j] == 0) ans++;
+                          if (x2 >= m || grid[x2][j] == 0) ans++;
+                          if (y1 < 0 || grid[i][y1] == 0) ans++;
+                          if (y2 >= n || grid[i][y2] == 0) ans++;
+                }
+            }
+        }
+        return ans;
+}
+
+
+时间复杂度O(mn)，我们需要遍历每个格子，每个格子要看其周围 4 个格子是否为岛屿，因此总时间复杂度为 O(4nm)=O(nm)。空间复杂度O(1)。
