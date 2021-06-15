@@ -1,0 +1,38 @@
+Given a list of lists of integers, nums, return all elements of nums in diagonal order as shown in the below images.
+
+Input: nums = [[1,2,3,4,5],[6,7],[8],[9,10,11],[12,13,14,15,16]]
+Output: [1,6,2,8,7,3,9,4,12,10,5,13,11,14,15,16]
+
+
+既然是对角线，那么x+y就是相等的。所以我们可以按照x+y去分类，开一个二维数组ans[i][j]，i表示（x+y），然后正常遍历这个nums，每遍历到一个元素，看看它的x+y，把它丢到ans[x+y]中。由于我们是从左到右从上到下遍历nums的，所以答案是反过来的，最后再reverse一下就行了
+
+public int[] findDiagonalOrder(List<List<Integer>> nums) {
+        // 左下到右上对角线满足：x+y一样
+        List<List<Integer>> list = new ArrayList<>();
+        int len = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            len += nums.get(i).size(); //得到最终数组的长度
+            for (int j = 0; j < nums.get(i).size(); j++) { //从小到大遍历
+                // list中不包含对角线i+j，需新建i+j并放入nums[i][j]
+                if (i + j >= list.size()) {
+                          List<Integer> temp = new ArrayList<>();
+                          temp.add(nums.get(i).get(j));
+                          list.add(temp);
+                } else {
+                          list.get(i + j).add(nums.get(i).get(j));
+                }            
+            }
+        }
+        int[] ans = new int[len];
+        int index = 0;
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).size() == 0) continue;
+            for (int j = list.get(i).size() - 1; j >= 0; j--) { //反转
+                    ans[index++] = list.get(i).get(j);
+            } // 观察发现：大的数字在左下，每一层对角线的数字从大到小
+        }
+        return ans;
+}
+
+
+时间复杂度O(n)，空间复杂度O(n)
