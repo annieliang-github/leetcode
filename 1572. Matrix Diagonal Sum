@@ -1,0 +1,36 @@
+Given a square matrix mat, return the sum of the matrix diagonals.
+Only include the sum of all the elements on the primary diagonal and all the elements on the secondary diagonal that are not part of the primary diagonal.
+
+Input: mat = [[1,2,3],
+              [4,5,6],
+              [7,8,9]]
+Output: 25
+Explanation: Diagonals sum: 1 + 5 + 9 + 3 + 7 = 25
+Notice that element mat[1][1] = 5 is counted only once.
+
+
+
+逐行遍历，记当前的行号为 i，对于一行我们把 (i,i) 位置和 (i,n−i−1) 加入答案。这样如果 n 是奇数的话，最中间的格子会被加入两次。所以 n 为奇数的时候，我们需要减掉矩阵最中心的那个值。
+
+public int diagonalSum(int[][] mat) {
+        if (mat == null || mat.length == 0) return 0;
+        int len = mat.length;
+        int ans = 0;
+        for (int i = 0; i < len; i++) {
+            ans += mat[i][i]; // 左上到右下
+            ans += mat[i][len - 1 - i]; // 右上到左下
+        }
+        if (mat.length % 2 == 0) { // 偶数个数字的时候，没有中间重复
+            return ans;
+        } else {
+            return ans - mat[len / 2][len / 2];
+        }
+}
+
+
+注意：最后的if else判断可以用如下来写：
+return n % 2 == 0 ? ans : ans - mat[mid][mid]
+或者位运算：
+return ans - mat[mid][mid] * (n & 1); ⇒ 如果是偶数，n&1返回0；否则返回1，为奇数。 
+
+时间复杂度O(n)，空间复杂度O(1)
