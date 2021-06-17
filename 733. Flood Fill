@@ -1,0 +1,41 @@
+An image is represented by an m x n integer grid image where image[i][j] represents the pixel value of the image. You are also given three integers sr, sc, and newColor. You should perform a flood fill on the image starting from the pixel image[sr][sc].
+
+Return the modified image.
+
+法一：DFS，时间复杂度O(mn)，空间复杂度O(mn)
+public int[][] floodFill(int[][] image, int sr, int sc, int newColor) {
+        dfs(image, sr, sc, newColor, image[sr][sc]);
+        return image;
+}
+private void dfs(int[][] image, int sr, int sc, int newColor, int oldColor) {
+        if (sr < 0 || sc < 0 || sr >= image.length || sc >= image[0].length ||
+           image[sr][sc] != oldColor || newColor == oldColor) return; 
+        image[sr][sc] = newColor; //先把起点flood fill
+        dfs(image, sr - 1, sc, newColor, oldColor);
+        dfs(image, sr + 1, sc, newColor, oldColor);
+        dfs(image, sr, sc + 1, newColor, oldColor);
+        dfs(image, sr, sc - 1, newColor, oldColor);  
+}
+
+法2：BFS，时间复杂度O(mn)，空间复杂度O(mn)
+public int[][] floodFill(int[][] image, int sr, int sc, int newColor) {
+        int m = image.length, n = image[0].length, oldColor = image[sr][sc];
+        if (newColor == oldColor) return image;
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(new int[] {sr, sc});
+        image[sr][sc] = newColor; // 放入queue后把原本这格换颜色
+        while (!queue.isEmpty()) {
+            int[] cell = queue.poll();
+            int i = cell[0], j = cell[1];
+            image[i][j] = newColor;
+            if (i - 1 >= 0 && image[i - 1][j] == oldColor)
+                    queue.offer(new int[] {i - 1, j});
+            if (i + 1 < m && image[i + 1][j] == oldColor)
+                    queue.offer(new int[] {i + 1, j});
+            if (j - 1 >= 0 && image[i][j - 1] == oldColor)    
+                    queue.offer(new int[] {i, j - 1});
+            if (j + 1 < n && image[i][j + 1] == oldColor)    
+                    queue.offer(new int[] {i, j + 1});
+        }
+        return image;
+}
