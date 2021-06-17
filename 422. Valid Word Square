@@ -1,0 +1,39 @@
+Given the root of a binary tree, check whether it is a mirror of itself (i.e., symmetric around its center).
+将根节点的左子树记做 left，右子树记做 right。比较 left 是否等于 right，不等的话直接返回就可以了。如果相等，比较 left.left和right.right，以及left.right和right.left
+
+终止条件：left != right，或者 left 和 right 都为空
+
+DFS：时间复杂度O(n)，空间复杂度O(n)，下同。
+public boolean isSymmetric(TreeNode root) {
+        return helper(root, root);
+}
+private boolean helper(TreeNode n1, TreeNode n2) {
+        if (n1 == null && n2 == null) return true;
+        if (n1 == null || n2 == null) return false;
+        return (n1.val == n2.val) && 
+             helper(n1.right, n2.left) && helper(n1.left, n2.right);
+}
+
+如果改成BFS的话，首先从队列中拿出left 和 right比较
+将 left.left 和 right.right 放入队列，再将 left.right 和 right.left 放入队列
+public boolean isSymmetric(TreeNode root) {
+        if (root == null || (root.left == null && root.right == null)) 
+            return true; //如果左右孩子都为空，或者root为空，return true
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root.left);
+        queue.offer(root.right);
+        while (!queue.isEmpty()) {
+            TreeNode left = queue.poll();
+            TreeNode right = queue.poll();
+            //比较这两个节点, 如果都为空就继续(树的一边到头了，一个脚矮)
+            if (left == null && right == null) continue;
+            if (left == null || right == null) return false;
+            if (left.val != right.val) return false;
+            queue.offer(left.left);
+            queue.offer(right.right);
+            queue.offer(left.right);
+            queue.offer(right.left);
+        }
+        return true;
+}
+
