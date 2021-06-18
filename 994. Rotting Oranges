@@ -1,0 +1,42 @@
+You are given an m x n grid where each cell can have one of three values: 0 represents an empty cell, 1 represents a fresh orange, 2 represents a rotten orange. Every minute, any fresh orange that is 4-directionally adjacent to a rotten orange becomes rotten. Return the minimum number of minutes that must elapse until no cell has a fresh orange. If this is impossible, return -1.
+Input: grid = [[2,1,1],[1,1,0],[0,1,1]]
+Output: 4
+
+public int orangesRotting(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        int count = 0; //新鲜橘子的数量
+        Queue<int[]> queue = new LinkedList<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 2) { //遍历到2，坏的橘子，放入queue
+                    queue.offer(new int[] {i, j});
+                } else if (grid[i][j] == 1) count++;
+            }
+        }
+        int ans = 0; // 腐烂的轮数，或者分钟数
+        int[] dx = new int[] {1, -1, 0, 0};
+        int[] dy = new int[] {0, 0, 1, -1};
+        while (count > 0 && !queue.isEmpty()) {
+            ans++;
+            int size = queue.size();
+            for (int level = 0; level < size; level++) { // 遍历当前层级的队列
+                int[] index = queue.poll();
+                int x = index[0], y = index[1];
+                for (int k = 0; k < 4; k++) {
+                    int i = x + dx[k];
+                    int j = y + dy[k];
+                    //判断新的index是否在range中，且为1，若符合的话更新为2
+                    if (i >= 0 && j >= 0 && i < m && j < n && grid[i][j]==1) {
+                        count--; // 把新鲜橘子变坏了
+                        grid[i][j] = 2;
+                        queue.offer(new int[] {i, j}); // 放入新的坐标数组
+                    }
+                }
+            }
+        }
+        if (count > 0) return -1; //还有新鲜没变坏的橘子，不能都污染
+            return ans;
+    }
+}
+
+时间复杂度：O(nm)->进行一次BFS的时间，空间复杂度：O(nm)->队列里存放的最多不会超过 nm
