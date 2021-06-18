@@ -1,0 +1,35 @@
+There is a ball in a maze with empty spaces (represented as 0) and walls (represented as 1). The ball can go through the empty spaces by rolling up, down, left or right, but it won't stop rolling until hitting a wall. When the ball stops, it could choose the next direction. Return true if the ball can stop at the destination, otherwise return false. You may assume that the borders of the maze are all walls.
+Input: maze = [[0,0,1,0,0],[0,0,0,0,0],[0,0,0,1,0],[1,1,0,1,1],[0,0,0,0,0]], start = [0,4], destination = [4,4]        Output: true
+One possible way is : left -> down -> left -> down -> right -> down -> right.
+
+public boolean hasPath(int[][] maze, int[] start, int[] destination) {
+    int m = maze.length, n = maze[0].length;
+    int[] dx = new int[] {1, -1, 0, 0};
+int[] dy = new int[] {0, 0, -1, 1};
+    Queue<int[]> queue = new LinkedList<>();
+    queue.offer(start);
+    maze[start[0]][start[1]] = -1; //改成任意数字表示已经visited
+
+    while (!queue.isEmpty()) {
+        int[] index = queue.poll();
+        int x = index[0], y = index[1];
+    for (int k = 0; k < 4; k++) {
+        int i = x + dx[k];
+        int j = y + dy[k];
+        //如果不越界且为0，可以走动
+        if (i >= 0 && j >= 0 && i < m && j < n && maze[i][j] == 0) {
+            if (i == destination[0] && j == destination[1]) 
+return true;
+if (maze[i][j] == 0) {
+    maze[i][j] = -1; // 如果为0，标记为已访问
+    queue.offer(new int[] {i, j}); //继续放入queue中
+}
+} 
+}
+}
+return false;
+}
+
+注意：以上代码没有跑，不知道是否正确！
+
+时间复杂度O(mn), 空间复杂度O(mn)
