@@ -14,16 +14,17 @@ int[] dy = new int[] {0, 0, -1, 1};
         int[] index = queue.poll();
         int x = index[0], y = index[1];
     for (int k = 0; k < 4; k++) {
-        int i = x + dx[k];
-        int j = y + dy[k];
-        //如果不越界且为0，可以走动
-        if (i >= 0 && j >= 0 && i < m && j < n && maze[i][j] == 0) {
-            if (i == destination[0] && j == destination[1]) 
-return true;
+        // 只要不越界且不为1，就可以在该点一直尝试不同的方向走动
+        while (x >= 0 && y >= 0 && x < m && y < n && maze[x][y] != 1) {
+            x += dx[k];
+            y + dy[k];
+        }
+x -= dx[k]; // 不能走动以后再退回
+        y -= dy[k];
+if (i == destination[0] && j == destination[1]) return true;
 if (maze[i][j] == 0) {
-    maze[i][j] = -1; // 如果为0，标记为已访问
-    queue.offer(new int[] {i, j}); //继续放入queue中
-}
+maze[i][j] = -1; // 如果为0，标记为已访问
+queue.offer(new int[] {i, j}); //继续放入queue中
 } 
 }
 }
