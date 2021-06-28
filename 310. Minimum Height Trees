@@ -1,0 +1,52 @@
+A tree is an undirected graph in which any two vertices are connected by exactly one path. Among all possible rooted trees, those with minimum height (i.e. min(h))  are called minimum height trees (MHTs). Return a list of all MHTs' root labels. 
+Input: n = 4, edges = [[1,0],[1,2],[1,3]]    Output: [1]
+比如有：edges = [[3,0],[3,1],[3,2],[3,4],[5,4]], 每组为一pair，构造的map如下：
+
+    0: 3->
+    3: 0->1->2->4->
+    1: 3->
+    2: 3->
+    4: 3->5->
+    5: 4->
+
+
+从边缘开始，先找到所有出度为1的节点，然后把所有出度为1的节点进队列，然后不断地bfs，最后找到的就是两边同时向中间靠近的节点，那么这个中间节点就相当于把整个距离二分了，那么它当然就是到两边距离最小的点啦，也就是到其他叶子节点最近的节点了。
+
+public List<Integer> findMinHeightTrees(int n, int[][] edges) {
+        List<Integer> ans = new ArrayList<>();
+        if (n == 1) { // 只有一个顶点，编号从0开始，返回0
+            ans.add(0);
+            return ans;
+        }
+        int[] degree = new int[n]; //每个顶点对应的边数
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.put(i, new ArrayList<>()); // 每个顶点先都放入空arrayList
+        }
+          for (int[] pair : edges) { // 因为是无向图，所以正反两条边都要加进map
+            map.get(pair[0]).add(pair[1]);
+            map.get(pair[1]).add(pair[0]);
+            degree[pair[0]]++;
+            degree[pair[1]]++; // 分别update入度
+        }
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (degree[i] == 1) queue.offer(i); //把deg为1的叶子结点放入queue
+        }
+        
+        while (!queue.isEmpty()) {
+            List<Integer> list = new ArrayList<>();
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int node = queue.poll();
+                list.add(node);
+                for (int neighbor : map.get(node)) {
+                    degree[neighbor]--; //每放入一个leaf，就把相邻的点deg - 1                // 直到deg=1，入queue
+                    if (degree[neighbor] == 1) queue.offer(neighbor); 
+                }
+            }
+            ans = list;
+        }
+        return ans;
+}
+
