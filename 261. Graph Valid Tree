@@ -1,0 +1,74 @@
+Given n nodes labeled from 0 to n-1 and a list of undirected edges (each edge is a pair of nodes), write a function to check whether these edges make up a valid tree.
+
+You can assume that no duplicate edges will appear in edges. Since all edges are undirected, [0,1] is the same as [1,0] and thus will not appear together in edges.
+
+需要检查：1.是否都connect 2,是否有环 => 等价于 #edges = #nodes - 1
+
+先用邻接表重新存储图，方便遍历；任意取一图节点作为树root的节点；无向图检查是否有环，可以用bfs或dfs遍历，如果遍历过程中发现某个邻居已被访问，且该邻居不属于上一个level，则说明有环，返回False，因此需要另外记录每个节点的level（有向图则不需要）；为了避免森林的情况，记录遍历过的节点个数，检查是否等于n
+
+解法1：BFS，时间复杂度O(n)，空间复杂度O(m+n)，n为edge数
+
+使用Map和HashSet做adjacency list，如果遍历到一个节点，在 Set 中没有，则加入 HashSet，如果已经存在，则返回false，还有就是在遍历邻接链表的时候，遍历完成后需要将结点删掉
+
+public boolean validTree(int n, int[][] edges) {
+    if (n == 0) return false;
+    if (edges.length != n - 1) return false;
+        Map<Integer, Set<Integer>> graph = initializeGraph(n, edges);
+    
+    Queue<Integer> queue = new LinkedList<>();
+    Set<Integer> set = new HashSet<>();
+    queue.offer(0); //因为前面已经判断过n=0的情况，此时已确保至少有一个元素
+    set.add(0); //放入该元素的index 0
+    while (!queue.isEmpty()) {
+        int node = queue.poll();
+        for (int neighbor : graph.get(node)) { //遍历该节点的adjacency list
+            if (set.contains(neighbor) continue;
+            set.add(neighbor);
+            queue.offer(neighbor);
+}
+}
+return set.size() == n;
+}
+
+private Map<Integer, Set<Integer>> initializeGraph(int n, int[][] edges) {
+    Map<Integer, Set<Integer>> graph = new HashMap<>();
+    for (int i = 0; i < n; i++) {
+        graph.put(i, new HashSet<>()); //先都放入空set
+}
+for (int i = 0; i < edges.length; i++) {
+    int u = edges[i][0];
+    int v = edges[i][1];
+    graph.get(u).add(v); //因为是双向图，正反都要加入map
+    graph.get(v).add(u);
+}
+return graph;
+}
+
+此外，BFS解法还可以用Map和数组visit来判断
+
+public boolean validTree(int n, int[][] edges) {
+    Map<Integer, List<Integer>> map = new HashMap<>();
+    boolean[] visited = new boolean[n];
+    for (int i = 0; i < n; i++) {
+        map.put(i, new ArrayList<>()); //initialize
+}
+for (int[] edge: edges) {
+    map.get(edge[0]).add(edge[1]);
+map.get(edge[1]).add(edge[0]);
+}
+Queue<Integer> queue = new LinkedList<>();
+queue.offer(0);
+while (!queue.isEmpty()) {
+    int node = queue.poll();
+    if (visited[node]) return false; //已经访问过，说明有cycle
+    visited[node] = true;
+    for (int neighbor : map.get(node)) {
+        // 邻居节点中，没被访问过的入queue
+        if (!visited[neighbor]) queue.offer(neighbor); 
+}
+}
+for (boolean b : visited) {
+    if (!b) return false; //如果有没被访问过的，说明有断点
+}
+return true;
+}
