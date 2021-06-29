@@ -1,0 +1,83 @@
+Given n nodes labeled from 0 to n - 1 and a list of undirected edges (each edge is a pair of nodes), write a function to find the number of CCs in an undirected graph.
+Input: n = 5 and edges = [[0, 1], [1, 2], [3, 4]]
+
+     0          3
+     |          |
+     1 --- 2    4 
+
+Output: 2
+
+方法一：unionFind。用一个数组记录各个数字的父节点，然后遍历图，对edge中两个端点做union。最后扫一遍数组，找到根节点个数即可。
+                                      [0,1,2,3,4]
+i.e.edges = [[0, 1], [1, 2], [3, 4]]，最开始 index 0 1 2 3 4， initially each value is its parent。因为1和0中间有edge，需要merge，就是把一个parent point to另一个parent
+
+[2,2,2,4,4]        如果index和它对应的数不同，说明不是parent
+index  0 1 2 3 4 ==> 最终 count unique parent
+
+public int countComponents(int n, int[][] edges) {
+    int[] ids = new int[n];
+    for (int i = 0; i < ids.length; i++) ids[i] = i;
+    for (int[] edge : edges) union(edge[0], edge[1], ids);
+    Set<Integer> set = new HashSet<>();
+    for (int i = 0; i < ids.length; i++) set.add(find(i, ids));
+    return set.size();
+}
+
+private void union(int edge1, int edge2, int[] ids) { //合并2个edge并返回parent
+    int parent1 = find(edge1, ids);
+    int parent2 = find(edge2, ids); //分别找到两个parent
+    ids[parent1] = parent2;
+}
+
+private int find(int edge, int[] ids) { //parent定义：index = ids[index]
+    // 如果edge is not parent，recursively call and assign parent
+    if (ids[edge] != edge) ids[edge] = find(ids[edge], ids);
+    return ids[edge];
+}
+
+时间复杂度O(n + m * log n)，m是# edges， n是# nodes，能达到这个是因为用了蓝色的path compression，如果不用的话是O(mn）
+空间复杂度O(n)，因为create ids array of size n
+方法二：DFS、BFS，时间复杂度O(m+n)，空间复杂度O(m+n)
+
+public int countComponents(int n, int[][] edges) {
+    List<List<Integer>> graph = new ArrayList<>(); //构造graph的adjacency list
+    for (int i = 0; i < n; i++) {
+        graph.add(new ArrayList<>()); //先initialize为空
+}
+for (int[] edge : edges) {
+    graph.get(edge[0]).add(edge[1]);
+graph.get(edge[1]).add(edge[0]); //正反两个节点都加入链表
+}
+Set<Integer> visited = new HashSet<>(); //set包含的是访问的index
+int count = 0; //CC的个数
+for (int i = 0 ; i < n; i++) {
+    if (!visited.contains(i)) {
+        bfs(graph, i, visited); //或者dfs
+        count++;    //注意位置
+}
+}
+return count;
+}
+
+private void dfs(List<List<Integer>> graph, int i, Set<Integer> visited) {
+    visited.add(i);
+    for (int neighbor : graph.get(i)) {
+    if (!visited.contains(neighbor)) dfs(graph, neighbor, visited);
+}
+}
+
+private void bfs(List<List<Integer>> graph, int i, Set<Integer> visited) {
+    Queue<Integer> queue = new LinkedList<>();
+    visited.add(i);
+    queue.offer(i); //把第一个节点放入queue
+    while (!queue.isEmpty()) {
+        int curr = queue.poll();
+        List<integer> neighbors = graph.get(curr);
+        for (int neighbor : neighbors) {
+            if (!visited.contains(neighbor)) {
+                queue.add(neighbor);
+                visited.add(neighbor);
+}
+}
+}
+}
