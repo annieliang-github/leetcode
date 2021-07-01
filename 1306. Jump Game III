@@ -1,0 +1,44 @@
+Given an array of non-negative integers arr, you are initially positioned at start index of the array. When you are at index i, you can jump to i + arr[i] or i - arr[i], check if you can reach to any index with value 0.
+Input: arr = [4,2,3,0,3,1,2], start = 5        Output: true
+All possible ways to reach at index 3 with value 0 are: 
+index 5 -> index 4 -> index 1 -> index 3 
+index 5 -> index 6 -> index 4 -> index 1 -> index 3 
+
+方法一：BFS，时间复杂度O(n)，空间复杂度O(n)
+public boolean canReach(int[] arr, int start) {
+        //题目：从index i出发，可向左或向右arr[i]步，可否到达元素为0的index
+        if (arr[start] == 0) return true; //一开始就是0
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(start);
+        boolean[] visited = new boolean[arr.length];
+        while (!queue.isEmpty()) {
+            int curr = queue.poll();
+            // 如果新的index在0-n之间，且没有访问过，判断是否元素为0
+            int index1 = curr + arr[curr]; // 向右
+            if (index1 < arr.length && !visited[index1]) {
+                if (arr[index1] == 0) return true;
+                queue.offer(index1);
+                visited[index1] = true;
+            }
+            int index2 = curr - arr[curr]; // 向左
+            if (index2 >= 0 && !visited[index2]) { //注意只是if 不是else if
+                if (arr[index2] == 0) return true;
+                queue.offer(index2);
+                visited[index2] = true;
+            }
+        }
+        return false;
+}
+
+方法二：递归
+public boolean canReach(int[] arr, int start) {
+        // 题目说是non-negative，先检查是否越界，以及元素是否为非负
+        if (start >= 0 && start < arr.length && arr[start] >= 0) {
+            if (arr[start] == 0) return true; //base case
+            // 路过start后，就把start变为负，这样就不会再进入循环，保证不重复访问
+            arr[start] = arr[start] * -1;
+            return canReach(arr, start + arr[start]) || 
+canReach(arr, start - arr[start]);
+        }
+        return false;
+}
