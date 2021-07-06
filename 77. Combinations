@@ -1,0 +1,29 @@
+Given two integers n and k, return all possible combinations of k numbers out of the range [1, n]. You may return the answer in any order.
+Input: n = 4, k = 2
+Output: [[2,4],[3,4],[2,3],[1,2],[1,3],[1,4]]
+
+class Solution {
+    public List<List<Integer>> combine(int n, int k) {
+        List<List<Integer>> ans = new ArrayList<>();
+        if (k > n || k <= 0) return ans; //因为最多就是k<=n
+        dfs(n, k, ans, new ArrayList<>(), 1); //从1开始
+        return ans;
+    }
+    //1.定义
+    private void dfs(int n, int k, List<List<Integer>> ans, List<Integer> subset, int index) {
+        //3.出口
+        if (subset.size() == k) {
+            ans.add(new ArrayList<>(subset)); //长度相同，深度copy放入ans
+            return;
+        }
+        //2.拆解
+        for (int i = index; i <= n; i++) { //从1到n所以<=
+            subset.add(i);
+        //注意这里recurse的是i+1,和start index无关
+            dfs(n, k, ans, subset, i + 1); 
+            subset.remove(subset.size() - 1); //backtracking
+        }
+    }
+}
+
+时间复杂度：O({n \choose k} * k) 空间复杂度：O(n)，即递归使用栈空间的空间代价
