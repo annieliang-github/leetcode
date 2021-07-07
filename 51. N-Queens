@@ -1,0 +1,43 @@
+Given an integer n, return all distinct solutions to the n-queens puzzle. You may return the answer in any order.
+Input: n = 4    Output: [[".Q..","...Q","Q...","..Q."],["..Q.","Q...","...Q",".Q.."]]
+    List<List<String>> ans = new ArrayList<>();
+    char[][] board;
+    Set<Integer> cols = new HashSet<>(); //每一列只能有一个皇后
+    Set<Integer> sum = new HashSet<>(); // 左上到右下对角线 i.e. 0,0 1,1...差相等
+    Set<Integer> diff = new HashSet<>();
+    
+    public List<List<String>> solveNQueens(int n) {
+        board = new char[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) board[i][j] = '.'; // 初始化
+        }
+        dfs(n, 0);
+        return ans;
+    }
+    private void dfs(int n, int level) { //第几行
+        if (level == n) { //递归结束条件：已经loop完棋盘的行
+            List<String> temp = new ArrayList<>();
+            for (int i = 0; i < n; i++) {
+                //i这行的所有元素char，都合并在一起以String的形式加入temp
+                temp.add(String.valueOf(board[i]));
+            }
+            ans.add(temp);
+        }
+        for (int i = 0; i < n; i++) {
+            //如果i列没有，且对应的两个斜线上也没有，就可以在此放并回溯
+            if (!cols.contains(i) && !diff.contains(level - i) 
+             && !sum.contains(level + i)) {
+                cols.add(i);
+                diff.add(level - i);
+                sum.add(level + i);
+                board[level][i] = 'Q'; //第level行第i列
+                dfs(n, level + 1);
+                board[level][i] = '.'; // 再换回来，并移除Set刚加入的元素
+     => 都在if里写        cols.remove(i);
+                diff.remove(level - i);
+                sum.remove(level + i);
+            }
+        }
+    }
+
+时间复杂度：O(N!)，其中 N 是皇后数量。空间复杂度：O(N)，空间复杂度主要取决于递归调用层数、记录每行放置的皇后的列下标的数组以及三个集合。
