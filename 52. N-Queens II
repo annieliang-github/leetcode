@@ -1,0 +1,39 @@
+The n-queens puzzle is the problem of placing n queens on an n x n chessboard such that no two queens attack each other. Given an integer n, return the number of distinct solutions to the n-queens puzzle.
+Input: n = 4    Output: 2
+Explanation: There are two distinct solutions to the 4-queens puzzle as shown.
+这道题不需要board和ArrayList，只要int ans和三个set即可。
+
+class Solution {
+  
+    int ans = 0;
+    char[] board;
+    Set<Integer> cols = new HashSet<>();
+    Set<Integer> diff = new HashSet<>();
+    Set<Integer> sum = new HashSet<>();
+    
+    public int totalNQueens(int n) {
+        dfs(n, 0);
+        return ans;
+    }
+    
+    private void dfs(int n, int level) {
+        if (level == n) { // 递归结束条件
+            ans++;
+            return;
+        }
+        for (int i = 0; i < n; i++) {
+            if (!cols.contains(i) && !diff.contains(level - i) 
+&& !sum.contains(level + i)) {
+                cols.add(i);
+                diff.add(level - i);
+                sum.add(level + i);
+                dfs(n, level + 1);
+                cols.remove(i);
+                diff.remove(level - i);
+                sum.remove(level + i);
+            }
+        }
+}
+}
+
+时间复杂度：O(N!)，其中 N 是皇后数量。空间复杂度：O(N)，空间复杂度主要取决于递归调用层数以及三个集合。
