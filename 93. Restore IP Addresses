@@ -1,0 +1,41 @@
+Given a string s containing only digits, return all possible valid IP addresses that can be obtained from s. A valid IP address consists of exactly four integers, each integer is between 0 and 255, separated by single dots and cannot have leading zeros. 
+Input: s = "25525511135"
+Output: ["255.255.11.135","255.255.111.35"]
+
+本题明确要求只会分成4段，所以分割的段数作为终止条件。pointNum表示逗点数量，pointNum为3说明字符串分成了4段了。主要考虑到如下三点：
+段位以0为开头的数字不合法；段位里有非正整数字符不合法；段位如果大于255了不合法
+
+    List<String> ans = new ArrayList<>();
+    public List<String> restoreIpAddresses(String s) {
+        if (s.length() < 4 || s.length() > 12) return ans;
+        dfs(s, 0, 0); // startIndex: 搜索的起始位置， pointNum:添加逗点的数量
+        return ans;
+    }
+    private void dfs(String s, int startIndex, int pointNum) { 
+        if (pointNum == 3) { // 逗点数量为3时，分隔结束
+            if (isValid(s, startIndex, s.length() - 1)) ans.add(s);
+            return; // 递归的出口
+        }
+        for (int i = startIndex; i < s.length(); i++) {
+            if (isValid(s, startIndex, i)) {
+                s = s.substring(0, i + 1) + "." + s.substring(i + 1); //添加分隔.
+                pointNum++;
+                dfs(s, i + 2, pointNum); // 本来应该是i+1，但因为添加逗点，现在是i+2
+                pointNum--;
+                s = s.substring(0, i + 1) + s.substring(i + 2); //回溯到没添加之前
+            } else break;
+        }
+    }
+    private boolean isValid(String s, int start, int end) { //[start, end]是否合法
+        if (start > end) return false;
+        if (s.charAt(start) == '0' && start != end) return false; // 0开头数字不合法
+        int num = 0;
+        for (int i = start; i <= end; i++) {
+            if (s.charAt(i) > '9' || s.charAt(i) < '0') return false; // ⾮数字不合法
+            num = num * 10 + (s.charAt(i) - '0');
+            if (num > 255) return false;
+        }
+        return true;
+    }
+
+时间复杂度 O(1): 因为最多递归到第4层，而每一层都最多只有3种情况，递归与字符串长度n无关。空间复杂度 O(1) ？？？？。这里只计入除了用来存储答案数组以外的额外空间复杂度。递归使用的空间与递归的最大深度成正比。
