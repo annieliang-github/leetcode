@@ -1,0 +1,47 @@
+Given two stings ransomNote and magazine, return true if ransomNote can be constructed from magazine and false otherwise.
+
+Each letter in magazine can only be used once in ransomNote.
+
+ 
+
+Example 1:
+
+Input: ransomNote = "a", magazine = "b"
+Output: false
+
+
+
+class Solution {
+    public boolean canConstruct(String ransomNote, String magazine) {
+        int[] ransomNoteArray=new int[26];
+        for(int i=0;i<ransomNote.length();i++){
+            ransomNoteArray[ransomNote.charAt(i)-'a']++;
+        }
+        for(int i=0;i<magazine.length();i++){
+            if(ransomNoteArray[magazine.charAt(i)-'a']!=0){
+                ransomNoteArray[magazine.charAt(i)-'a']--;
+            }
+        }
+        for(int i=0;i<26;i++){
+            if(ransomNoteArray[i]>0){
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+class Solution {
+    public boolean canConstruct(String ransomNote, String magazine) {
+        int[] letters = new int[26];
+        for (char c : magazine.toCharArray()) {
+            letters[c - 'a']++;
+        }
+        for (char c : ransomNote.toCharArray()) {
+            if (--letters[c - 'a'] < 0) return false;
+        }   
+        
+        return true;
+    }
+}
+
