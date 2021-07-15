@@ -1,0 +1,71 @@
+Given an m x n integer matrix matrix, if an element is 0, set its entire row and column to 0's, and return the matrix. You must do it in place.
+Input: matrix = [[1,1,1],[1,0,1],[1,1,1]]
+Output: [[1,0,1],[0,0,0],[1,0,1]]
+
+解法一：暴力 -> 用两个标记数组分别记录每一行和每一列是否有零出现。首先遍历该数组一次，如果某个元素为 0，那么就将该元素所在的行和列所对应标记数组的位置置为 true。最后再次遍历该数组，用标记数组更新原数组即可。
+
+public void setZeroes(int[][] matrix) {
+        int rows = matrix.length, cols = matrix[0].length;
+        boolean[] row = new boolean[rows];
+        boolean[] col = new boolean[cols];
+        
+        for (int i = 0 ; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (matrix[i][j] == 0) {
+                    row[i] = true;
+                    col[j] = true;
+                }
+            }
+        }
+        for (int i = 0 ; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (row[i] || col[j]) matrix[i][j] = 0;
+            }
+        } 
+}
+
+
+时间复杂度：O(mn)，其中 m 是矩阵的行数，n 是矩阵的列数。至多只需要遍历该矩阵两次。
+空间复杂度：O(m+n) 需要分别记录每一行或每一列是否有零出现。
+
+
+方法二：O(1)空间复杂度，使用第一行第一列作为数组记录是否有0出现
+
+public void setZeroes(int[][] matrix) {
+        int m = matrix.length, n = matrix[0].length;
+        boolean r0 = false, c0 = false; //首行和首列的flag
+        for (int i = 0; i < m; i++) {
+            if (matrix[i][0] == 0) { // 如果第一列有0
+                r0 = true;
+                break;
+            }
+        }
+        for (int j = 0 ; j < n; j++) {
+            if (matrix[0][j] == 0) { // 如果第一行有0
+                c0 = true;
+                break;
+            }
+        }
+        
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) { // 从1开始扫描，看是否[i][j]=0
+                if (matrix[i][j] == 0) {
+                          matrix[i][0] = 0; // 更改第一列该行信息=0
+                          matrix[0][j] = 0; // 更改第一行该列信息=0
+                }
+            }
+        } 
+        for (int i = 1; i < m; i++) {
+            if (matrix[i][0] == 0)
+                for (int j = 1; j < n; j++) matrix[i][j] = 0;
+        }
+        for (int j = 1; j < n; j++) {
+            if (matrix[0][j] == 0)
+                for (int i = 1; i < m; i++) matrix[i][j] = 0;
+        }
+        // 根据最开始记录的首行和首列信息，进行置零
+        if (r0) for (int i = 0; i < m; i++) matrix[i][0] = 0;
+        if (c0) for (int j = 0; j < n; j++) matrix[0][j] = 0;
+}
+
+
