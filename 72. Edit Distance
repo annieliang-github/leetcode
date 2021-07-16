@@ -1,0 +1,81 @@
+Given two strings word1 and word2, return the minimum number of operations required to convert word1 to word2. You have three operations permitted on a word:
+Insert a character
+Delete a character
+Replace a character
+Input: word1 = "horse", word2 = "ros"    Output: 3
+Explanation: 
+horse -> rorse (replace 'h' with 'r')
+rorse -> rose (remove 'r')
+rose -> ros (remove 'e')
+
+方法一：暴力DFS，时间复杂度 O(2^N)， 空间复杂度O(M*N)
+
+public int minDistance(String word1, String word2) {
+        return dfs(word1, word2, 0, 0);
+}
+private int dfs(String s1, String s2, int i, int j) {
+      // s1已经遍历完，s2剩下的都要加
+        if (i == s1.length()) return s2.length() - j;
+        if (j == s2.length()) return s1.length() - i;
+      // 相同情况下，同时后移
+        if (s1.charAt(i) == s2.charAt(j)) return dfs(s1, s2, i + 1, j + 1); 
+        int opt1 = dfs(s1, s2, i, j + 1); // 删除s2当前字母
+        int opt2 = dfs(s1, s2, i + 1, j); // 删除s1当前字母
+      // 需要替换，比如Horse和Ros，把H替换为R，两个pointer都后移
+        int opt3 = dfs(s1, s2, i + 1, j + 1); 
+        return Math.min(Math.min(opt1, opt2), opt3) + 1;
+}
+
+
+优化：DFS 过程中，对于 s1[i] 和 s2[j] 的处理，都重复计算了多次。因此创建二维数组 memo[i][j] 用来记录从 s1[i] 和 s2[j] 开始处理的最少操作次数，初始值为 -1，表示尚未处理过。时间复杂度O(mn），空间复杂度O(mn)。
+
+int[][] memo;
+public int minDistance(String word1, String word2) {
+        memo = new int[word1.length() + 1][word2.length() + 1];
+        for (int i = 0; i < memo.length; i++) {
+            for (int j = 0; j < memo[0].length; j++)
+                memo[i][j] = -1; // 先设置成-1表示还没处理过
+        }
+        return dfs(word1, word2, 0, 0);
+}
+    
+private int dfs(String s1, String s2, int i, int j) {
+        if (memo[i][j] != -1) return memo[i][j];
+        if (i == s1.length()) return memo[i][j] = s2.length() - j;
+        if (j == s2.length()) return memo[i][j] = s1.length() - i;
+        if (s1.charAt(i) == s2.charAt(j)) 
+            return memo[i][j] = dfs(s1, s2, i + 1, j + 1); // 同时后移
+        int opt1 = dfs(s1, s2, i, j + 1); // 删除s2当前字母
+        int opt2 = dfs(s1, s2, i + 1, j); // 删除s1当前字母
+        int opt3 = dfs(s1, s2, i + 1, j + 1); // 需要替换
+        return memo[i][j] = Math.min(Math.min(opt1, opt2), opt3) + 1;
+}
+
+
+方法三：DP 时间复杂度O(mn），空间复杂度O(mn)。状态转移方程为：
+
+    if word1[i] == word2[j] : dp[i][j] =dp[i + 1][j + 1];
+    else: dp[i][j] = min(dp[i+1][j+1], dp[i+1][j], dp[i][j+1]) + 1;
+
+注意，需要先初始化dp[i][word2.length]和dp[word1.length][j]，以便之后的状态转移。
+
+public int minDistance(String word1, String word2) {
+        // 从后往前，最终需要return dp[0][0],
+        int[][] dp = new int[word1.length() + 1][word2.length() + 1];
+        for (int i = 0; i < dp.length; i++)
+            dp[i][word2.length()] = word1.length() - i;
+        for (int j = 0; j < dp[0].length; j++)
+            dp[word1.length()][j] = word2.length() - j;
+        for (int i = word1.length() - 1; i>= 0; i--) {
+            for (int j = word2.length() - 1; j >= 0; j--) {
+                if (word1.charAt(i) == word2.charAt(j))
+                    // 如果char相等，都要往后移
+                    dp[i][j] = dp[i + 1][j + 1];
+                else
+                    dp[i][j] = Math.min(dp[i + 1][j + 1], 
+                             Math.min(dp[i][j + 1], dp[i + 1][j])) + 1;
+            }
+        }
+        return dp[0][0];
+}
+
