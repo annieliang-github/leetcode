@@ -1,0 +1,19 @@
+int disappear(int[][] grid, int row, int col) {
+  if (grid == null || grid.length == 0) return 0;
+  int count = 0;
+  int num = grid[row][col];
+  count += dfs(grid, i, j, num);
+  return count;
+}
+
+int dfs(int[][] grid, int i, int j, int num) {
+  int count = 1;
+  int m = grid.length, n = grid[0].length;
+  if (i < 0 || i >= m || j < 0 || j >= n || grid[i][j] != num || grid[i][j] == -1) return 0;
+  grid[i][j] = -1;
+  count += dfs(grid, i + 1, j, num);
+  count += dfs(grid, i - 1, j, num);
+  count += dfs(grid, i, j + 1, num);
+  count += dfs(grid, i, j - 1, num);
+  return count;
+}
