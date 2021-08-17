@@ -1,0 +1,33 @@
+Given the root of a binary tree and an integer targetSum, return all root-to-leaf paths where the sum of the node values in the path equals targetSum. Each path should be returned as a list of the node values, not node references.
+A root-to-leaf path is a path starting from the root and ending at any leaf node. A leaf is a node with no children.
+Input: root = [5,4,8,11,null,13,4,7,2,null,null,5,1], targetSum = 22
+Output: [[5,4,11,2],[5,8,4,5]]
+
+There are two paths whose sum equals targetSum:
+5 + 4 + 11 + 2 = 22
+5 + 8 + 4 + 5 = 22
+
+class Solution {
+
+    List<List<Integer>> ans = new ArrayList<>();
+    List<Integer> subset = new ArrayList<>();
+    public List<List<Integer>> pathSum(TreeNode root, int targetSum) {
+        if (root == null) return ans;
+        dfs(root, targetSum);
+        return ans;
+    }
+    private void dfs(TreeNode root, int target) {
+        if (root == null) return;
+        subset.add(root.val);
+        if (root.val == target && root.left == null && root.right == null) {
+            ans.add(new ArrayList<>(subset));
+        }
+        dfs(root.left, target - root.val);
+        dfs(root.right, target - root.val);
+        subset.remove(subset.size() - 1);
+    }
+}
+
+时间复杂度：O(N^2)。在最坏情况下，树的上半部分为链状，下半部分为完全二叉树，并且从根节点到每一个叶子节点的路径都符合题目要求。此时，路径的数目为 O(N)，并且每一条路径的节点个数也为 O(N)，因此要将这些路径全部添加进答案中，时间复杂度为 O(N^2)。
+
+空间复杂度：O(N)，其中 N 是树的节点数。空间复杂度主要取决于栈空间的开销，栈中的元素个数不会超过树的节点数。
