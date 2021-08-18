@@ -32,3 +32,23 @@ class Solution {
         return dp[length - 1][sum + S]; //就是图中纵坐标@3
     }
 }
+
+
+class Solution {
+    int count = 0;
+    
+    public int findTargetSumWays(int[] nums, int target) {
+        dfs(nums, target, 0, 0);
+        return count;
+    }
+    private void dfs(int[] nums, int target, int index, int sum) {
+        if (index == nums.length) {
+            if (sum == target) count++;
+        } else {
+            dfs(nums, target, index + 1, sum + nums[index]);
+            dfs(nums, target, index + 1, sum - nums[index]);
+        }
+    }
+}
+
+
