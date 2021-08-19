@@ -1,0 +1,43 @@
+Given two integer arrays inorder and postorder where inorder is the inorder traversal of a binary tree and postorder is the postorder traversal of the same tree, construct and return the binary tree.
+
+Input: inorder = [9,3,15,20,7], postorder = [9,15,7,20,3]
+Output: [3,9,20,null,null,15,7]
+
+
+需要map和post数组，把inorder的节点值和index放在哈希表中，post可以做global variable
+        index - 1            
+       left      |index
+       start     | | rightstart
+         |       | | |
+inorder:[4,2,8,5,9,1,6,10,3,7]  左边子树有5个元素，长度为index-start
+post:   [4,8,9,5,2,10,6,7,3,1]  
+              |
+           postart+index-instart - 1
+post的右子树截至postEnd - 1，因为最后一个是root，
+
+in左子树：[instart，index - 1] 
+post左子树：[postart, poStart + index-instart - 1] -> 后续数组的起始位置加上左子树长度-1 就是后后序数组结束位置了，左子树的长度 = index-左子树start，
+in右子树[index + 1, inEnd]
+post右子树[postart + index - instart, poEnd - 1]
+
+Map<Integer, Integer> map = new HashMap<>();
+int[] post;
+public TreeNode buildTree(int[] inorder, int[] postorder) {
+        for (int i = 0; i < inorder.length; i++) {
+            map.put(inorder[i], i); //把inorder的节点值和index放在哈希表中
+        }
+        post = postorder;
+        TreeNode root = build(0, inorder.length - 1, 0, post.length - 1);
+        return root;
+}
+    
+private TreeNode build(int inStart, int inEnd, int postStart, int postEnd) {
+        if (inStart > inEnd || postStart > postEnd) return null;
+        int root = post[postEnd];
+        int index = map.get(root); // index of root in inorder array
+        TreeNode node = new TreeNode(root);
+        node.left = build(inStart, index - 1, postStart, postStart+index-inStart-1);
+        node.right = build(index + 1, inEnd, postStart+index-inStart, postEnd - 1);
+        return node;
+}
+时间复杂度：O(n)，空间复杂度：O(n)。使用 O(n) 存储哈希表，以及 O(h)表示递归时栈空间。
