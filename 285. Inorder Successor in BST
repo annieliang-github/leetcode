@@ -1,0 +1,43 @@
+Given a BST and a node in it, find the in-order successor of that node in the BST. The successor of a node p is the node with the smallest key greater than p.val.
+原理：判断root.val是否<=p, 如果是的话，successor一定在右子树，recurse on right即可
+如果root.val > p，有可能root是p的successor，也有可能左子树的一个元素是successor。
+所以此时先recurse on left，如果返回null就说明是root，非null的话就是那个元素
+
+法一：DFS：
+public TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
+    if (root == null) return null;
+    if (root.val <= p.val) inorderSuccessor(root.right, p);
+    if (root.val > p.val) {
+        TreeNode left = inorderSuccessor(root.left, p);
+        return left == null ? root : left;
+}
+}
+
+法二：把上面解法改为迭代：
+    TreeNode successor = null;
+    TreeNode curr = root;
+    while (curr != null) {
+        if (curr.val > p.val) {
+    successor = curr;
+    curr = curr.left; //不断向左走
+} else curr = curr.right;
+}
+    return successor;
+
+法三：用Stack模拟中序遍历。正常的中序遍历迭代法步骤：
+     while (curr != null || !stack.isEmpty()) 
+            while (curr != null) { // 步骤 1
+                stack.push(curr);
+                curr = curr.left;
+            }
+            curr = stack.pop(); // 步骤 2
+            ans.add(curr.val);
+            curr = curr.right; // 步骤 3
+
+
+步骤二后面新加：此题和iterator 的.next() function一样，都是return curr的值
+if (found) return curr;
+if (curr == p) found = true;
+后面再继续curr = curr.right
+
+时间复杂度O(h），最坏为O(n)
