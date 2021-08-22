@@ -1,0 +1,42 @@
+Given a binary search tree and a node in it, find the in-order successor of that node. The successor of a node p is the node with the smallest key greater than p.val.
+You will have direct access to the node but not to the root of the tree. Each node will have a reference to its parent node.
+和上一题类似，但是并不给一整棵树的root，找到一个node的下一个最小的后继节点。
+
+之前的dfs做法：如果root的值大于要找的，需要向左递归，如果是null说明root就是要找的后继。如果root.val <= p.val，后继肯定在右子树上，向右递归。
+public TreeNode dfs(TreeNode root, TreeNode p) {
+    if (root == null) return null;
+    if (root.val <= p.val) inorderSuccessor(root.right, p);
+    else {
+        TreeNode left = inorderSuccessor(root.left, p);
+        return left == null ? root : left;
+      }
+}
+
+
+现在在上面改动，只要能找到根节点，就可以套用这个function
+public Node inorderSuccessor(Node node) {
+    if (node == null) return null;
+    Node root = node;
+    while (root.parent != null) root = root.parent; //一直向上找到root
+    return dfs(root, node);
+}
+
+上面解法并不好！要在不访问别的节点值的情况下解决问题：
+一个点，如果右子树不null，先往右走一个子孩子，再往左往左直到叶子节点。
+        如果右子树null，先往左走持续走，走到没有路了以后，再往右上角拐一个
+
+public Node inorderSuccessor(Node node) {
+    if (node.right != null) {
+        Node curr = node.right;
+        while (curr.left != null) curr = curr.left;
+        return curr;
+} else {
+    Node curr = node;
+    while (curr.parent != null && curr.parent.right == curr) // 往左上角走
+        curr = curr.parent;
+    return curr.parent; //相当于往右上找parent
+}
+}
+
+
+时间复杂度O(h)，最好logn，最坏O(n)，空间复杂度O(h)
