@@ -1,0 +1,16 @@
+Given a binary tree, find the length of the longest consecutive sequence path. The longest consecutive path need to be from parent to child (cannot be the reverse).
+递归，consecutive要求 “target=现有val+1”。(因为要求只能是上升的)。如果找到新的length++，否则重新从1开始记录。
+
+int ans = 0;
+public int longestConsecutive(TreeNode root) {
+    dfs(root, 0, 0);
+    return ans;
+}
+private void dfs(TreeNode root, int length, int target) {
+    if (root == null) return;
+    if (root.val == target) length++;
+    else length = 1;
+    ans = Math.max(ans, length);
+    dfs(root.left, length, root.val + 1);
+    dfs(root.right, length, root.val + 1);
+}
