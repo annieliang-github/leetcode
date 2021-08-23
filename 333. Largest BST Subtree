@@ -1,0 +1,42 @@
+Given a binary tree, find the largest subtree which is a Binary Search Tree (BST), where largest means subtree with largest number of nodes in it. A subtree must include all of its descendants.
+   10        这个例子中root 10 的值大于右子树leaf 7的值，错误，所以整棵树不是BST
+   / \        可以用98题validate BST，dfs(node, min, max)
+  5  15    if node==null return true; if root.val <= min || root.val >= max，false
+ / \   \    size(root) 返回的是左右的max，再+1
+1   8   7    更新最大最小值为root.val并递归
+
+public int largestBST(Node root) { 不太优的解法：时间复杂度可能是O(n^2)
+    if (root == null) return 0;
+    if (isBST(root, Integer.MIN_VALUE, Integer.MAX_VALUE)) return size(root);
+    return Math.max(largetsBST(root.left), largetsBST(root.right));
+}
+
+最优解法：O(n)。每个node都有属性（T/F, size, min, max）表示是否valid, 包含自己size，最大最小值，从底向上递归。只有左右都为true，且左max < root.val && 右min > root.val，才向上一级返回size = left.size + right.size + 1;
+
+class MinMax {
+    int min, max, size; boolean isBST;
+    MinMax () { //构造器
+        min = Integer.MAX_VALUE;
+        max = Integer.MIN_VALUE;
+        isBST = true;
+        size = 0;
+}
+}
+private MinMax largest(Node root) {
+    if (root == null) return new MinMax(); //如果空root按照default的min和max返回
+    MinMax left = largest(root.left);
+    MinMax right = largest(root.right);
+    MinMax m = new MinMax();
+    if (left.isBst == false || right.isBst == false || 
+   left.max > root.data || right.min <= root.data) {
+    m.isBST = false;
+    m.size = Math.max(left.size, right.size);
+    return m;
+}
+//如果reach this point说明是一个valid BST，set true，set size和min、max
+m.isBST = true;
+m.size = left.size + right.size + 1;
+m.min = root.left != null ? left.min : root.data;
+m.max = root.right != null ? right.max : root.data;
+return m;
+}
