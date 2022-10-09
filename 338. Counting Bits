@@ -1,0 +1,41 @@
+class Solution {
+    public int[] countBits(int n) {
+        int[] ans = new int[n+1];
+        for (int i = 0; i <= n; i++) { // reaches n
+            ans[i] = helper(i);
+        }
+        return ans;
+    }
+    private int helper(int n) {
+        // base case:
+        if (n == 0) return 0;
+        if (n == 1) return 1;
+        // 0,1,2,3,4,5,6,7,8 => n
+        // 0,1,1,2,1,2,2,3,1 => bits 
+        // element 8 is same as 4, same as 2, same as 1 => recurse on n / 2
+        // element 7 is same as 3+1, same as 1+1 => recurse on n / 2 + 1
+        if (n % 2 == 0) return helper(n / 2);
+        return helper(n / 2) + 1;
+    }
+}
+
+above ANALYSIS :Time Complexity :- BigO(NlogN)Space Complexity :- BigO(N)
+
+optimize: to both O(n)
+
+class Solution {
+    public int[] countBits(int n) {
+        int[] R = new int[n+1];
+        if(n==0) return R;
+        
+        for(int i=1;i<n+1;i++) {
+            if(i%2 == 0) { // number is even
+                R[i] = R[i/2];
+            }
+            else { // is odd
+                R[i] = R[i-1] + 1;
+            }
+        }
+        return R;
+    }
+}
