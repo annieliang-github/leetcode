@@ -15,6 +15,7 @@ use sliding window:
     update ans with the current window size
     
     
+time O(n), space O(26) = O(1)
     
     
 class Solution {
