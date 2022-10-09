@@ -3,43 +3,41 @@ Given an m x n matrix of non-negative integers representing the height of each u
 
 
 class Solution {
-    int[] dx = {0, 0, -1, 1}; //合起来即为上下左右的方向
-    int[] dy = {1, -1, 0, 0};
-    public List<List<Integer>> pacificAtlantic(int[][] matrix) {
+    public List<List<Integer>> pacificAtlantic(int[][] heights) {
+        // start from the out boundary of both oceans, explore the matrix and find heights >= than current, meanning they can flow into the ocean
+        // find the intersection of both ocean heights
         List<List<Integer>> ans = new ArrayList<>();
-        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) 
-return ans;
-        int n = matrix.length, m = matrix[0].length;
-        boolean[][] pacific = new boolean[n][m]; //该坐标的点是否可以到达
-        boolean[][] atlantic = new boolean[n][m];
-        
-        for (int i = 0; i < m; i++) { // 第一行到pacific, 最后一行到atlantic
-            dfs(matrix, pacific, Integer.MIN_VALUE, 0, i); // 遍历每一列
-            dfs(matrix, atlantic, Integer.MIN_VALUE, n - 1, i);
-        }
-        for (int i = 0; i < n; i++) { // 第一列到pacific, 最后一列到atlantic
-            dfs(matrix, pacific, Integer.MIN_VALUE, i, 0); // 遍历每一行
-            dfs(matrix, atlantic, Integer.MIN_VALUE, i, m - 1);
+        int m = heights.length, n = heights[0].length;
+        boolean[][] reachP = new boolean[m][n];
+        boolean[][] reachA = new boolean[m][n]; // if it's reachable
+        int min = Integer.MIN_VALUE;
+        for (int i = 0; i < m; i++) {
+            dfs(heights, i, 0, min, reachP); // each row in left most col for pacific ocean
+            dfs(heights, i, n - 1, min, reachA); // each row in right most col for atlantic ocean
         }
         for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) { //如果都为true
-                if (pacific[i][j] && atlantic[i][j]) {
-                    List<Integer> temp = new ArrayList<>();
-                    temp.addAll(Arrays.asList(i, j)); //[i, j]
-                    ans.add(temp);
-                }       
+            dfs(heights, 0, i, min, reachP); // each col in top row for pacific ocean;
+            dfs(heights, m - 1, i, min, reachA); // each col in bottom row for atlantic ocean;
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (reachP[i][j] && reachA[i][j]) ans.add(Arrays.asList(i, j));
             }
         }
         return ans;
     }
-// 想要从最靠近海洋的一层往里找，看是否有比最外一层height大的数字
-private void dfs(int[][] matrix, boolean[][] ocean, int height, int i, int j) {
-        int n = matrix.length, m = matrix[0].length;
-        // 如果坐标越界，或者matrix[i][j] < height, 或者已经访问过
-        if (i<0||i>=n||j<0||j>=m|| visited[i][j] || matrix[i][j] < height) return;
-        ocean[i][j] = true; //表明可以分别到达两个海洋
-        for (int k = 0; k < 4; k++) { //上下左右recurse
-            dfs(matrix, visited, matrix[i][j], i + dx[k], j + dy[k]);
-        }
+    private void dfs(int[][] heights, int i, int j, int prev, boolean[][] reach) {
+        int m = heights.length, n = heights[0].length;
+        // need to find the height >= prev
+        if (i < 0 || j < 0 || i >= m || j >= n || reach[i][j] || heights[i][j] < prev) return;
+        reach[i][j] = true;
+        prev = heights[i][j];
+        dfs(heights, i + 1, j, prev, reach);
+        dfs(heights, i - 1, j, prev, reach);
+        dfs(heights, i, j + 1, prev, reach);
+        dfs(heights, i, j - 1, prev, reach);
     }
-}            时间复杂度 O(mn) 空间复杂度O(mn)
+}
+
+
+时间复杂度 O(mn) 空间复杂度O(mn)
