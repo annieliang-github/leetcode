@@ -1,0 +1,30 @@
+Given two integers a and b, return the sum of the two integers without using the operators + and -.
+
+class Solution {
+    public int getSum(int a, int b) {
+        // a = 1 => 0001
+        // b = 3 => 0011
+        // and & => 0001 to find which digit are the same so it means a carry
+        // xor ^ => 0010 to find the different bit (0^1 = 1, 1^1=0), assign it to a
+        // shift carry left one position, then assign it to b => 0010
+        // iterate until b == 0 (no carry)
+        int noCarry = a ^ b;
+        int carry = a & b;
+        if (carry == 0) return noCarry;
+        return getSum(carry << 1, noCarry);
+    }
+}
+
+思路：
+1、把运算分为两部分，
+第一部分只计算那些对应位相加，能够产生进位的位所产生的进位(虽然说是相加，但是这部分只关注可以产生进位的情况，即对应位都是1，所以采用异或运算可以只处理这种情况)，
+第二部分只计算那些对应位相加，不可以产生进位的位的运算结果((1,0),(0,1)(0,0)是要处理的情况，所以采用与运算(因为与运算不进位，也就是排除掉了对应位都是1的情况))。
+
+然后判断一下第一部分(即是否有对应位可以产生进位)的值是否为0，
+如果是0，那么直接返回第二部分的值(异或的结果正好是适合无进位情况的)，
+如果不是0(需要把进位加上)，然后把第一部分左移一位(因为他们是进位，此前并未左移)与第二部分相加就得到了总的结果，
+因为又是加法，然后就可以再次调用这个函数计算，直至进位是0。我想的是运算不会溢出，嘿嘿
+
+2、异或运算和与运算的作用
+(1)与运算 只关注于对应位相加时可以产生进位的情况，即(都是1)
+(2)异或运算 只关注于对应位相加时不会产生进位的情况，而且与运算是没有进位的，所以排除了异或运算负责的情况，(1,0),(0,1)。
