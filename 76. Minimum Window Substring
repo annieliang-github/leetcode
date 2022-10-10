@@ -15,21 +15,30 @@ Explanation: The minimum window substring "BANC" includes 'A', 'B', and 'C' from
 
 class Solution {
     public String minWindow(String s, String t) {
-        int[] maps = new int[128];
-        int[] mapt = new int[128];
-        String ans = "";
-        for (char c : t.toCharArray()) mapt[c]++;
+        // create smap and tmap, 128 each because of both lower and upper letters
+        // start from left = 0, for loop for right
+        // when char c in t, increment smap for this c,   
+        // if c in t count >= c in s count, count++, because if <, we already have enough chars to form, this would be dup     
+        // count -> keep track of how many valid chars we have in the window, while count == t.len, we have a valid but maybe not optimal answer, can increment left 
+        // get the left char, if t doesn't have left char or t.left char count < s.leftchar count, we can shrink: left++, remove left count from smap
+        // if ans is empty or new ans length is less, update
+        int[] smap = new int[128];
+        int[] tmap = new int[128];
+        for (char c : t.toCharArray()) tmap[c]++;
         int left = 0, count = 0;
-        for (int right = 0; right < s.length(); right++) { 
+        String ans = "";
+        for (int right = 0; right < s.length(); right++) {
             char c = s.charAt(right);
-            if (mapt[c] > 0) {
-                maps[c]++;
-                if (mapt[c] >= maps[c]) count++;
+            if (tmap[c] > 0) {
+                smap[c]++;
+                if (tmap[c] >= smap[c]) count++;
             }
             if (count == t.length()) {
-                while (mapt[s.charAt(left)] < maps[s.charAt(left)] || mapt[s.charAt(left)] == 0) {
-                    if (mapt[s.charAt(left)] < maps[s.charAt(left)]) maps[s.charAt(left)]--;
-                    left++;
+                while (tmap[s.charAt(left)] < smap[s.charAt(left)] || tmap[s.charAt(left)] == 0) {
+                    if (tmap[s.charAt(left)] < smap[s.charAt(left)]) {
+                        smap[s.charAt(left)]--; // condition to decrement smap count because shrinked window
+                    }
+                    left++; // will increment left no matter if this char exists or not
                 }
                 if (ans == "" || right - left + 1 < ans.length()) {
                     ans = s.substring(left, right + 1);
@@ -39,3 +48,5 @@ class Solution {
         return ans;
     }
 }
+
+time O(s+t), space O(s+t)
