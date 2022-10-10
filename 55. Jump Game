@@ -41,3 +41,18 @@ public boolean canJump(int[] nums) {
         }
         return true;
 }
+
+
+class Solution {
+    public boolean canJump(int[] nums) {
+        int len = nums.length;
+        int lastIndex = len - 1;
+        for (int i = len - 1; i >= 0; i--) {
+            if (i + nums[i] >= lastIndex) {
+                lastIndex = i; // from back move forward if it can be reached
+            }
+        }
+        return lastIndex == 0; // see if the first index is reached;
+    }
+}
+
