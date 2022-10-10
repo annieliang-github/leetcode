@@ -1,0 +1,33 @@
+Given an array of strings strs, group the anagrams together. You can return the answer in any order.
+
+An Anagram is a word or phrase formed by rearranging the letters of a different word or phrase, typically using all the original letters exactly once.
+
+ 
+
+Example 1:
+
+Input: strs = ["eat","tea","tan","ate","nat","bat"]
+Output: [["bat"],["nat","tan"],["ate","eat","tea"]]
+
+iterate through strs, for each string, get its count, and use Arrays.toString(count) as the key to map
+map.values() are the grouped answers
+
+time O(nk): n is the length of strs, k is the maximum len of a string in strs;
+
+class Solution {
+    public List<List<String>> groupAnagrams(String[] strs) {
+        Map<String, List<String>> map = new HashMap<>();            
+        int[] count = new int[26];
+
+        for (String str : strs) {
+            Arrays.fill(count, 0); // clear the count array
+            for (char c : str.toCharArray()) {
+                count[c - 'a']++;
+            }
+            String key = Arrays.toString(count);
+            if (!map.containsKey(key)) map.put(key, new ArrayList<>());
+            map.get(key).add(str);
+        }
+        return new ArrayList<>(map.values());
+    }
+}
