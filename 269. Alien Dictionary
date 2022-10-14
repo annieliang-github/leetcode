@@ -70,3 +70,7 @@ class Solution {
         return sb.toString();
     }
 }
+
+time O(c) C be the total length of all the words in the input list, added together.
+space O(1)
+
