@@ -30,3 +30,6 @@ class Solution {
         return dp[n];
     }
 }
+
+time O(n^3) because 2 for loop, and substring also O(n)
+space O(n)
