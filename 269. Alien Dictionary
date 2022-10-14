@@ -1,0 +1,72 @@
+There is a new alien language that uses the English alphabet. However, the order among the letters is unknown to you.
+
+You are given a list of strings words from the alien language's dictionary, where the strings in words are sorted lexicographically by the rules of this new language.
+
+Return a string of the unique letters in the new alien language sorted in lexicographically increasing order by the new language's rules. If there is no solution, return "". If there are multiple solutions, return any of them.
+
+A string s is lexicographically smaller than a string t if at the first letter where they differ, the letter in s comes before the letter in t in the alien language. If the first min(s.length, t.length) letters are the same, then s is smaller if and only if s.length < t.length.
+
+ 
+
+Example 1:
+
+Input: words = ["wrt","wrf","er","ett","rftt"]
+Output: "wertf"
+Example 2:
+
+Input: words = ["z","x"]
+Output: "zx"
+
+
+
+class Solution {
+    public String alienOrder(String[] words) {
+        Map<Character, List<Character>> map = new HashMap<>();
+        int[] indegree = new int[26];
+        Arrays.fill(indegree, -1);
+        for (String word : words) {
+            for (char c : word.toCharArray()) {
+                map.put(c, new ArrayList<>()); // initialize all chars to have empty list first
+                indegree[c - 'a'] = 0;
+            }
+        }
+        for (int i = 0; i < words.length - 1; i++) { // only till len - 1 because we need second word
+            String word1 = words[i], word2 = words[i + 1];
+            // case "ab", "a", impossible
+            int len1 = word1.length(), len2 = word2.length();
+
+            if (word1.length() > word2.length() && word1.startsWith(word2)) return "";
+            int minLen = Math.min(len1, len2);
+            for (int j = 0; j < minLen; j++) {
+                // word1: [wrt], word2: [wrf]
+                // iterate j until a point that c1 and c2 differs: t vs f
+                // construct graph: get(c1).put(c2) => t->f meaning f following t
+                // update indegree of c2
+                char c1 = word1.charAt(j);
+                char c2 = word2.charAt(j);
+                if (c1 != c2) {
+                    map.get(c1).add(c2); 
+                    indegree[c2 - 'a']++;
+                    break; // first mismatch found, no need to go further
+                }
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        Queue<Character> queue = new LinkedList<>(); // bfs
+        for (int i = 0; i < 26; i++) { // c - 'a' = index, so c = index + 'a'
+            if (indegree[i] == 0) queue.offer((char) ('a' + i));
+        }
+        while (!queue.isEmpty()) {
+            Character curr = queue.poll();
+            sb.append(curr);
+            for (Character next : map.get(curr)) {
+                indegree[next - 'a']--;
+                if (indegree[next - 'a'] == 0) queue.offer(next);
+            }
+        }
+        for(int degree : indegree){
+            if(degree > 0) return ""; // checks if cycl exists
+        }
+        return sb.toString();
+    }
+}
