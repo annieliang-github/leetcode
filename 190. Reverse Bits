@@ -34,3 +34,48 @@ public int reverseBits(int n) {
     }
     return result;
 }
+
+
+public class Solution {
+    // you need treat n as an unsigned value
+    public int reverseBits(int n) {
+        // initialize result to 0, shift result left by 1 bit
+        // if last digit is 1 (use n & 1 to know), add 1
+        // update n by shifting it to the right by 1 (n >>= 1)
+
+        // result = 0 = 0000_0000_0000_0000_0000_0000_0000_0000,
+        // n = 13 = 0000_0000_0000_0000_0000_0000_0000_1101
+
+        /**
+        i=0, result= result<<1 = 0
+        n&1= 1101, last digit is 1, so add 1:
+        & 0001 = 0001 => last digit is 1 so increment  result
+        result += 0001 = 0001
+        right shift n by 1 (drop the least significant bit): n= 0110
+
+        i=1, result = result << 1 = 0010
+        n & 1 = 0000 => last digit is 0 so don't increment result
+        right shift n by 1: n = 011
+
+        i = 2, result = result << 1 = 0100
+        n & 1 = 011, so increment result: result = 0101
+        right shift n by 1: n = 001
+
+        i=3, result = result << 1 = 1010
+        n & 1 = 001, result increment by 1: result = 1011
+        right shif n by 1: n = 0
+
+        now n & 1 always 0, and n >> 1 is 0, still  have i = 4 to i = 31 iteration left
+        padding 28 zeros to the right of the result
+        result = 1011_0000_0000_0000_0000_0000_0000_0000
+         */
+        if (n == 0) return 0;
+        int result = 0;
+        for (int i = 0; i < 32; i++) {
+            result <<= 1; // left shift result 1 bit
+            if ((n & 1) == 1) result++; // if last bit is 1, result++
+            n >>= 1; // right shift n 1 bit
+        }
+        return result;
+    }
+}
